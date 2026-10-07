@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AWS for AI Engineering · Michael Legemah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&family=Raleway:ital,wght@0,500;0,700;0,800;1,500;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #2d2a2e;
+  --bg-deep:   #221f22;
+  --bg-card:   #3a3640;
+  --bg-surface:#332f34;
+  --border:    rgba(255,255,255,0.07);
+  --border-md: rgba(255,255,255,0.13);
+  --yellow:  #ffd866;
+  --pink:    #ff6188;
+  --cyan:    #78dce8;
+  --orange:  #fc9867;
+  --green:   #a9dc76;
+  --purple:  #ab9df2;
+  --text:    #fcfcfa;
+  --soft:    #c1b8c8;
+  --muted:   #78dce8;
+  --font-serif: 'Raleway', 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono:  'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans:  'Outfit', 'Segoe UI', Helvetica, Arial, sans-serif;
+
+  --p1: var(--yellow);
+  --p2: var(--cyan);
+  --p3: var(--green);
+  --p4: var(--pink);
+  --p5: var(--purple);
+
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: dark;
+}
+/* The brand is dark-only; keep it dark whatever the viewer's setting. */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; } }
+:root[data-theme="dark"] { color-scheme: dark; }
+html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 84px); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+*, *::before, *::after { box-sizing: inherit; }
+
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-sans); font-weight: 300; font-size: 16.5px; line-height: 1.62; -webkit-font-smoothing: antialiased; }
+a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--yellow); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+code, kbd { font-family: var(--font-mono); font-size: .86em; color: var(--yellow); background: rgba(255,216,102,.08); border-radius: 4px; padding: 1px 5px; overflow-wrap: anywhere; }
+strong, b { font-weight: 500; color: var(--text); }
+
+/* ---------- top bar ---------- */
+.topbar { border-bottom: 1px solid var(--border); background: var(--bg-deep); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-family: var(--font-serif); font-weight: 700; letter-spacing: .01em; }
+.brand-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-md); display: grid; place-items: center; font-family: var(--font-mono); font-size: 13px; color: var(--yellow); }
+.topbar .status { font-family: var(--font-mono); font-size: 12.5px; color: var(--green); }
+
+/* ---------- hero ---------- */
+.hero { padding: 60px 0 36px; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 48px; align-items: start; }
+.kicker { font-family: var(--font-mono); font-size: 13px; color: var(--muted); margin: 0 0 18px; }
+h1 { font-family: var(--font-serif); font-weight: 800; font-size: clamp(38px, 5.6vw, 64px); line-height: 1.03; letter-spacing: -.02em; margin: 0 0 22px; }
+h1 em { font-style: italic; font-weight: 500; color: var(--yellow); }
+.thesis { font-family: var(--font-serif); font-weight: 500; font-style: italic; font-size: clamp(18px, 2vw, 21px); line-height: 1.45; border-left: 3px solid var(--green); padding-left: 16px; margin: 0 0 18px; }
+.lede { color: var(--soft); max-width: 48ch; margin: 0 0 24px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14px; color: var(--soft); padding: 0; margin: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 8px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--c); }
+
+.term { background: var(--bg-deep); border: 1px solid var(--border-md); border-radius: 14px; overflow: hidden; }
+.term-head { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: 12.5px; color: var(--soft); }
+.term-head i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.term-head .fname { margin-left: 10px; }
+.term-scroll { overflow-x: auto; }
+table.map { width: 100%; border-collapse: collapse; min-width: 440px; }
+.map th, .map td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+.map tbody tr:last-child th, .map tbody tr:last-child td { border-bottom: 0; }
+.map thead th { font-family: var(--font-mono); font-weight: 400; font-size: 12px; color: var(--muted); }
+.map tbody th { font-weight: 400; white-space: nowrap; }
+.map tbody th a { text-decoration: none; font-family: var(--font-serif); font-weight: 700; font-size: 15px; color: var(--c); }
+.map tbody th small { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--soft); font-weight: 400; }
+.map td { font-family: var(--font-mono); font-size: 12px; color: var(--soft); line-height: 1.55; }
+.term-foot { padding: 10px 16px; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 12px; color: var(--green); }
+
+/* ---------- reminders ---------- */
+.reminders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 8px 0 36px; }
+.reminder { border-left: 3px solid var(--c, var(--purple)); background: var(--bg-surface); border-radius: 0 10px 10px 0; padding: 16px 20px; }
+.reminder h2 { font-family: var(--font-serif); font-size: 17px; font-weight: 700; margin: 0 0 4px; color: var(--c, var(--purple)); }
+.reminder p { margin: 0; color: var(--soft); font-size: 15px; }
+
+/* ---------- toolbar ---------- */
+.toolbar { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-block: 1px solid var(--border); padding-top: env(safe-area-inset-top, 0px); }
+.toolbar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-block: 12px; }
+.toolbar input[type="search"] { flex: 1 1 220px; min-width: 0; background: var(--bg-deep); border: 1px solid var(--border-md); color: var(--text); border-radius: 8px; padding: 9px 12px; font: inherit; font-size: 15px; }
+.toolbar input::placeholder { color: #8f8599; }
+.btn { background: var(--bg-card); color: var(--text); border: 1px solid var(--border-md); border-radius: 8px; padding: 8px 14px; font: inherit; font-size: 14.5px; cursor: pointer; text-decoration: none; }
+.btn:hover { border-color: var(--soft); }
+.chip { background: transparent; color: var(--soft); border: 1px solid var(--border-md); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; text-decoration: none; }
+.chip:hover { color: var(--bg-deep); background: var(--c); border-color: var(--c); }
+.chip:hover .dot { background: var(--bg-deep); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ---------- sections ---------- */
+.pillar-head { margin: 56px 0 18px; padding-top: 28px; border-top: 3px solid var(--c); }
+.pillar-head .num { font-family: var(--font-mono); font-size: 13px; color: var(--c); display: block; margin-bottom: 8px; }
+.pillar-head h2 { font-family: var(--font-serif); font-weight: 800; font-size: clamp(28px, 3.6vw, 40px); line-height: 1.1; letter-spacing: -.01em; margin: 0 0 8px; }
+.pillar-head p { margin: 0; color: var(--soft); max-width: 72ch; }
+
+.blk { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px; margin: 0 0 16px; }
+.blk[open] { border-color: var(--border-md); }
+.blk > summary { list-style: none; cursor: pointer; padding: 18px 22px; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px 16px; align-items: start; }
+.blk > summary::-webkit-details-marker { display: none; }
+.blk .meta { grid-column: 1 / -1; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.blk h3 { font-family: var(--font-serif); font-weight: 700; font-size: clamp(19px, 2.2vw, 23px); line-height: 1.25; margin: 0; }
+.blk .toggle { font-family: var(--font-mono); font-size: 12px; color: var(--soft); border: 1px solid var(--border-md); border-radius: 6px; padding: 3px 9px; white-space: nowrap; }
+.blk[open] .toggle .o { display: none; }
+.blk:not([open]) .toggle .c { display: none; }
+.blk-body { padding: 4px 22px 22px; border-top: 1px solid var(--border); }
+.blk-body > :first-child { margin-top: 18px; }
+.blk-body h4 { font-family: var(--font-serif); font-weight: 700; font-size: 15.5px; margin: 22px 0 8px; color: var(--c, var(--text)); }
+.blk-body p { margin: 0 0 12px; color: var(--soft); }
+.blk-body ul { margin: 0 0 12px; padding-left: 20px; color: var(--soft); }
+.blk-body li { margin: 3px 0; }
+.blk-body li::marker { color: var(--c, var(--muted)); }
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 28px; }
+.cols > div { min-width: 0; }
+
+/* code */
+.code { position: relative; margin: 0 0 14px; background: var(--bg-deep); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.code .cap { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 12px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); }
+.code button { font: inherit; font-family: var(--font-mono); font-size: 11px; color: var(--soft); background: transparent; border: 1px solid var(--border-md); border-radius: 5px; padding: 1px 8px; cursor: pointer; }
+.code button:hover { color: var(--yellow); border-color: var(--yellow); }
+.code pre { margin: 0; padding: 14px 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; color: var(--text); tab-size: 2; }
+.code pre code { font-size: inherit; color: inherit; background: none; padding: 0; overflow-wrap: normal; }
+.tk-c { color: #7e7a85; font-style: italic; }
+.tk-s { color: var(--yellow); }
+.tk-k { color: var(--pink); }
+.tk-n { color: var(--purple); }
+.tk-f { color: var(--green); }
+
+/* tables */
+.tbl { overflow-x: auto; margin: 0 0 14px; border: 1px solid var(--border-md); border-radius: 10px; background: var(--bg-deep); }
+.tbl table { width: 100%; border-collapse: collapse; min-width: 560px; font-size: 14.5px; }
+.tbl th, .tbl td { padding: 9px 13px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); }
+.tbl tr:last-child td, .tbl tr:last-child th { border-bottom: 0; }
+.tbl thead th { font-family: var(--font-mono); font-weight: 400; font-size: 11.5px; color: var(--muted); background: rgba(255,255,255,.02); }
+.tbl tbody th { font-weight: 500; color: var(--text); white-space: nowrap; }
+.tbl td { color: var(--soft); }
+.tbl td code { font-size: .82em; }
+
+/* callouts */
+.call { border-left: 3px solid var(--c, var(--orange)); background: var(--bg-deep); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 0 0 14px; }
+.call b.k { display: block; font-family: var(--font-mono); font-weight: 400; font-size: 11.5px; color: var(--c, var(--orange)); margin-bottom: 3px; }
+.call p { margin: 0; font-size: 15px; color: var(--soft); }
+.call ul { margin: 4px 0 0; padding-left: 18px; color: var(--soft); font-size: 15px; }
+
+/* diagrams */
+.diagram { margin: 0 0 14px; background: var(--bg-deep); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.diagram figcaption { padding: 8px 14px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); }
+.diagram .scroll { overflow-x: auto; padding: 10px; }
+.dg { display: block; width: 100%; min-width: 700px; height: auto; }
+.dg text { font-family: var(--font-mono); font-size: 12px; fill: var(--text); }
+.dg .sub { fill: var(--soft); font-size: 10px; }
+.dg .lbl { fill: var(--muted); font-size: 10px; }
+.dg .zone-t { fill: var(--soft); font-size: 10.5px; }
+.dg rect.n { fill: var(--bg-card); stroke-width: 1.5; }
+.dg rect.zone { fill: none; stroke: var(--border-md); stroke-width: 1.2; stroke-dasharray: 5 5; }
+.dg .cy { stroke: var(--cyan); } .dg .ye { stroke: var(--yellow); } .dg .gr { stroke: var(--green); }
+.dg .pk { stroke: var(--pink); } .dg .pu { stroke: var(--purple); } .dg .or { stroke: var(--orange); }
+.dg path.ln { fill: none; stroke: var(--soft); stroke-width: 1.4; }
+.dg path.dash { stroke-dasharray: 4 4; }
+
+/* pitfalls grid */
+.pit { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; list-style: none; margin: 0; padding: 0; }
+.pit li { border: 1px dashed var(--border-md); border-radius: 10px; padding: 12px 16px; color: var(--soft); font-size: 15px; margin: 0; }
+.pit li b { display: block; font-family: var(--font-mono); font-weight: 400; font-size: 12px; color: var(--orange); margin-bottom: 2px; }
+
+.empty { display: none; text-align: center; color: var(--soft); padding: 32px; border: 1px dashed var(--border-md); border-radius: 14px; margin-top: 24px; }
+
+footer { margin-top: 64px; border-top: 1px solid var(--border); background: var(--bg-deep); }
+footer .wrap { padding-block: 22px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--soft); }
+footer a { color: var(--soft); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .map tbody tr { animation: rise .5s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 70ms + 150ms); }
+  @keyframes rise { from { transform: translateY(6px); opacity: 0; } to { transform: none; opacity: 1; } }
+}
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+  .reminders { grid-template-columns: 1fr; }
+  .cols { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  .wrap { padding: 0 16px; }
+  .hero { padding-top: 40px; }
+  .blk > summary { padding: 16px; }
+  .blk-body { padding: 4px 16px 18px; }
+  .topbar .status { display: none; }
+}
+@media print {
+  .toolbar, .toggle, .code button { display: none; }
+  .blk-body { display: block !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="https://mleg.tech" target="_blank" rel="noopener"><span class="brand-mark">ML</span>Michael Legemah</a>
+    <span class="status">&gt;&gt;&gt; aws_for_ai_engineering = True</span>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="kicker">aws_ai_playbook.md · cheat sheet</p>
+      <h1>AWS for <em>AI engineering</em>, agents &amp; MLOps</h1>
+      <p class="thesis">Dense, copy-pasteable reference for designing, shipping and operating agentic systems on Bedrock, AgentCore and the services around them.</p>
+      <p class="lede">Five pillars, each block collapsible and searchable. Code is boto3, CDK (Python) and Terraform. Verify model IDs, quotas and preview features against the current AWS docs before you ship.</p>
+      <ul class="legend">
+        <li><span class="dot" style="--c:var(--p1)"></span>Foundation models</li>
+        <li><span class="dot" style="--c:var(--p2)"></span>Agents</li>
+        <li><span class="dot" style="--c:var(--p3)"></span>Data &amp; vectors</li>
+        <li><span class="dot" style="--c:var(--p4)"></span>MLOps &amp; ops</li>
+        <li><span class="dot" style="--c:var(--p5)"></span>Secure deploy</li>
+      </ul>
+    </div>
+
+    <div class="term" aria-label="Service map by pillar">
+      <div class="term-head">
+        <i style="background:var(--pink)"></i><i style="background:var(--yellow)"></i><i style="background:var(--green)"></i>
+        <span class="fname">stack_map.py</span>
+      </div>
+      <div class="term-scroll">
+        <table class="map">
+          <thead><tr><th scope="col">Pillar</th><th scope="col">Core services</th></tr></thead>
+          <tbody>
+            <tr style="--i:0"><th style="--c:var(--p1)"><a href="#p1">01 Models<small>build the call</small></a></th><td>Bedrock Converse · Guardrails · Knowledge Bases · prompt caching</td></tr>
+            <tr style="--i:1"><th style="--c:var(--p2)"><a href="#p2">02 Agents<small>orchestrate</small></a></th><td>Bedrock Agents · AgentCore · LangGraph on Fargate/EKS · DynamoDB/Valkey state</td></tr>
+            <tr style="--i:2"><th style="--c:var(--p3)"><a href="#p3">03 Data<small>ground it</small></a></th><td>S3 · Glue · Kinesis · OpenSearch Serverless · Aurora pgvector · MemoryDB</td></tr>
+            <tr style="--i:3"><th style="--c:var(--p4)"><a href="#p4">04 MLOps<small>measure and tune</small></a></th><td>Model Evaluation · Ragas · CloudWatch · CloudTrail · inference profiles · batch</td></tr>
+            <tr style="--i:4"><th style="--c:var(--p5)"><a href="#p5">05 Deploy<small>ship it safely</small></a></th><td>CDK · Terraform · CodePipeline · GitHub OIDC · PrivateLink · KMS</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="term-foot">&gt;&gt;&gt; 21 blocks · 4 diagrams · 29 snippets</div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="reminders">
+    <div class="reminder" style="--c:var(--yellow)">
+      <h2>Use Converse, not InvokeModel</h2>
+      <p>One request shape across model families, native tool use, guardrails and caching. Drop to <code>InvokeModel</code> only for embeddings, image models or provider-specific features.</p>
+    </div>
+    <div class="reminder" style="--c:var(--cyan)">
+      <h2>Gate on evals, not vibes</h2>
+      <p>Every prompt, model, knowledge-base or tool-schema change runs an offline eval in CI. A blocking gate is cheaper than a customer finding the regression.</p>
+    </div>
+    <div class="reminder" style="--c:var(--pink)">
+      <h2>Tag and log from day one</h2>
+      <p>Application inference profiles with cost tags, invocation logging to KMS-encrypted S3, and alarms on throttles. Retrofitting attribution is painful.</p>
+    </div>
+  </div>
+</div>
+
+<nav class="toolbar" aria-label="Search and navigate">
+  <div class="wrap">
+    <input type="search" id="q" placeholder="Search, e.g. guardrail, pgvector, checkpoint, KMS" aria-label="Search the cheat sheet">
+    <div class="chips" role="group" aria-label="Jump to pillar">
+      <a class="chip" href="#p1" style="--c:var(--p1)"><span class="dot" style="--c:var(--p1)"></span>Models</a>
+      <a class="chip" href="#p2" style="--c:var(--p2)"><span class="dot" style="--c:var(--p2)"></span>Agents</a>
+      <a class="chip" href="#p3" style="--c:var(--p3)"><span class="dot" style="--c:var(--p3)"></span>Data</a>
+      <a class="chip" href="#p4" style="--c:var(--p4)"><span class="dot" style="--c:var(--p4)"></span>MLOps</a>
+      <a class="chip" href="#p5" style="--c:var(--p5)"><span class="dot" style="--c:var(--p5)"></span>Deploy</a>
+    </div>
+    <button class="btn" id="expandBtn" type="button">Expand all</button>
+  </div>
+</nav>
+
+<main class="wrap" id="main">
+
+<!-- ======================= REFERENCE ARCHITECTURE ======================= -->
+<details class="blk" id="arch" open data-pillar="0" style="margin-top:32px">
+  <summary>
+    <div class="meta">reference_architecture.svg · start here</div>
+    <h3>Reference architecture: production agent on AWS</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <figure class="diagram" style="margin:0 0 14px">
+      <figcaption>request path (top) · state and tools (middle) · data plane (bottom) · observability (base)</figcaption>
+      <div class="scroll">
+      <svg class="dg" viewBox="0 0 960 440" role="img" aria-label="Reference architecture for a production agent on AWS">
+        <defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c1b8c8"/></marker></defs>
+        <rect class="zone" x="170" y="10" width="780" height="356" rx="14"/>
+        <text class="zone-t" x="184" y="28">VPC · PrivateLink endpoints · KMS CMKs · IAM least privilege</text>
+
+        <rect class="n ye" x="20" y="46" width="120" height="56" rx="8"/><text x="80" y="70" text-anchor="middle">Client</text><text class="sub" x="80" y="86" text-anchor="middle">web · app · batch</text>
+        <rect class="n cy" x="195" y="46" width="150" height="56" rx="8"/><text x="270" y="70" text-anchor="middle">Edge</text><text class="sub" x="270" y="86" text-anchor="middle">WAF · API GW / ALB · Cognito</text>
+        <rect class="n pu" x="395" y="46" width="180" height="56" rx="8"/><text x="485" y="70" text-anchor="middle">Agent runtime</text><text class="sub" x="485" y="86" text-anchor="middle">AgentCore · Fargate · Lambda</text>
+        <rect class="n ye" x="640" y="46" width="180" height="56" rx="8"/><text x="730" y="70" text-anchor="middle">Bedrock Converse</text><text class="sub" x="730" y="86" text-anchor="middle">Guardrails · prompt cache</text>
+
+        <rect class="n gr" x="195" y="170" width="150" height="56" rx="8"/><text x="270" y="194" text-anchor="middle">State</text><text class="sub" x="270" y="210" text-anchor="middle">DynamoDB · Valkey</text>
+        <rect class="n or" x="395" y="170" width="180" height="56" rx="8"/><text x="485" y="194" text-anchor="middle">Tools</text><text class="sub" x="485" y="210" text-anchor="middle">AgentCore Gateway · Lambda</text>
+        <rect class="n gr" x="640" y="170" width="180" height="56" rx="8"/><text x="730" y="194" text-anchor="middle">Knowledge Base</text><text class="sub" x="730" y="210" text-anchor="middle">hybrid search · rerank</text>
+
+        <rect class="n or" x="395" y="290" width="180" height="50" rx="8"/><text x="485" y="311" text-anchor="middle">Private APIs · RDS</text><text class="sub" x="485" y="327" text-anchor="middle">SaaS via NAT / PrivateLink</text>
+        <rect class="n gr" x="640" y="290" width="180" height="50" rx="8"/><text x="730" y="311" text-anchor="middle">Vector store</text><text class="sub" x="730" y="327" text-anchor="middle">AOSS · pgvector · S3 Vectors</text>
+        <rect class="n cy" x="835" y="290" width="105" height="50" rx="8"/><text x="887" y="311" text-anchor="middle">S3 corpus</text><text class="sub" x="887" y="327" text-anchor="middle">SSE-KMS</text>
+
+        <rect class="n pk" x="20" y="384" width="920" height="42" rx="8" style="stroke-dasharray:5 4"/>
+        <text x="480" y="410" text-anchor="middle">CloudWatch metrics + alarms · invocation logs to S3 (KMS) · CloudTrail · AgentCore Observability / OTel traces</text>
+
+        <path class="ln" marker-end="url(#ar1)" d="M140 74H195"/>
+        <path class="ln" marker-end="url(#ar1)" d="M345 74H395"/>
+        <path class="ln" marker-end="url(#ar1)" d="M575 74H640"/>
+        <path class="ln" marker-end="url(#ar1)" d="M430 102L290 170"/>
+        <path class="ln" marker-end="url(#ar1)" d="M485 102V170"/>
+        <path class="ln" marker-end="url(#ar1)" d="M730 102V170"/>
+        <path class="ln" marker-end="url(#ar1)" d="M485 226V290"/>
+        <path class="ln" marker-end="url(#ar1)" d="M730 290V226"/>
+        <path class="ln" marker-end="url(#ar1)" d="M835 315H820"/>
+        <path class="ln dash" marker-end="url(#ar1)" d="M270 370V366"/>
+        <text class="lbl" x="296" y="140">checkpoint</text>
+        <text class="lbl" x="492" y="140">tool_use</text>
+        <text class="lbl" x="738" y="140">Retrieve</text>
+        <text class="lbl" x="738" y="262">query</text>
+        <text class="lbl" x="838" y="282">ingest</text>
+      </svg>
+      </div>
+    </figure>
+    <div class="call" style="--c:var(--cyan)"><b class="k">design rule</b><p>Keep the runtime stateless and put session state in DynamoDB or Valkey. That lets you move between Lambda, Fargate and AgentCore Runtime without rewriting agent logic.</p></div>
+  </div>
+</details>
+
+<!-- ======================= PILLAR 1 ======================= -->
+<header class="pillar-head" id="p1" style="--c:var(--p1)">
+  <span class="num">01 / foundation_models.py</span>
+  <h2>Foundation models &amp; AI engineering</h2>
+  <p>Amazon Bedrock invocation, inference parameters, Guardrails and Knowledge Bases.</p>
+</header>
+
+<details class="blk" open data-pillar="1">
+  <summary>
+    <div class="meta">bedrock-runtime · boto3</div>
+    <h3>Model invocation &amp; streaming (Converse preferred)</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="code"><div class="cap"><span>converse.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">import boto3
+from botocore.config import Config
+
+brt = boto3.client(
+    "bedrock-runtime", region_name="us-east-1",
+    config=Config(retries={"max_attempts": 8, "mode": "adaptive"},
+                  read_timeout=300, connect_timeout=5),
+)
+MODEL = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"   # inference profile ID
+
+# --- Converse (sync) ---
+r = brt.converse(
+    modelId=MODEL,
+    system=[{"text": "You are a precise assistant. Answer in JSON."}],
+    messages=[{"role": "user", "content": [{"text": "Summarize SQS vs SNS."}]}],
+    inferenceConfig={"maxTokens": 800, "temperature": 0.2, "topP": 0.9,
+                     "stopSequences": ["END"]},
+    additionalModelRequestFields={"top_k": 40},       # provider-specific
+    guardrailConfig={"guardrailIdentifier": "gr-abc123",
+                     "guardrailVersion": "3", "trace": "enabled"},
+)
+print(r["output"]["message"]["content"][0]["text"])
+print(r["usage"], r["metrics"]["latencyMs"], r["stopReason"])
+
+# --- ConverseStream ---
+s = brt.converse_stream(modelId=MODEL,
+        messages=[{"role": "user", "content": [{"text": "Explain HNSW."}]}],
+        inferenceConfig={"maxTokens": 600})
+for ev in s["stream"]:
+    if "contentBlockDelta" in ev:
+        print(ev["contentBlockDelta"]["delta"].get("text", ""), end="", flush=True)
+    elif "metadata" in ev:
+        print("\n", ev["metadata"]["usage"])</code></pre></div>
+
+    <h4>Legacy InvokeModel / InvokeModelWithResponseStream</h4>
+    <p>Provider-native payloads. Use for embeddings, image generation and features Converse does not expose.</p>
+    <div class="code"><div class="cap"><span>invoke_model.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">import json
+body = json.dumps({
+    "anthropic_version": "bedrock-2023-05-31",
+    "max_tokens": 500, "temperature": 0.2,
+    "messages": [{"role": "user", "content": [{"type": "text", "text": "Hello"}]}],
+})
+resp = brt.invoke_model(modelId=MODEL, body=body,
+                        contentType="application/json", accept="application/json")
+print(json.loads(resp["body"].read())["content"][0]["text"])
+
+# streaming
+resp = brt.invoke_model_with_response_stream(modelId=MODEL, body=body)
+for ev in resp["body"]:
+    chunk = json.loads(ev["chunk"]["bytes"])
+    if chunk.get("type") == "content_block_delta":
+        print(chunk["delta"].get("text", ""), end="")</code></pre></div>
+
+    <h4>Prompt caching in Converse</h4>
+    <div class="code"><div class="cap"><span>cache_point.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">brt.converse(
+    modelId=MODEL,
+    system=[{"text": LONG_POLICY_TEXT}, {"cachePoint": {"type": "default"}}],
+    messages=[{"role": "user", "content": [{"text": q}]}],
+)
+# r["usage"] now reports cacheReadInputTokens / cacheWriteInputTokens</code></pre></div>
+    <div class="call" style="--c:var(--orange)"><b class="k">gotcha</b><ul><li>Use the <code>us.</code> / <code>eu.</code> / <code>global.</code> inference-profile ID, not the bare model ID, for models that require cross-region inference.</li><li>The cached prefix must be identical and above the model's minimum token count. Put static content first, variable content last.</li><li>Model IDs change. Confirm with <code>aws bedrock list-inference-profiles</code>.</li></ul></div>
+  </div>
+</details>
+
+<details class="blk" data-pillar="1">
+  <summary>
+    <div class="meta">inferenceConfig · additionalModelRequestFields</div>
+    <h3>Inference parameter reference</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="tbl"><table>
+      <thead><tr><th>Parameter</th><th>Where in Converse</th><th>Operational impact</th><th>Starting point</th></tr></thead>
+      <tbody>
+        <tr><th>temperature</th><td><code>inferenceConfig</code></td><td>Scales token-probability randomness. Low is near deterministic, high increases variety and drift.</td><td>0 to 0.2 extraction, routing, tool use. 0.6 to 1.0 creative.</td></tr>
+        <tr><th>top_p</th><td><code>inferenceConfig.topP</code></td><td>Nucleus sampling: restrict to the smallest token set whose cumulative probability reaches p.</td><td>0.9 to 1.0. Tune this or temperature, not both. Some newer Claude models reject both.</td></tr>
+        <tr><th>top_k</th><td><code>additionalModelRequestFields</code></td><td>Sample from only the k most likely tokens. Not in the common Converse schema, and support varies by model family.</td><td>40 to 250 where supported.</td></tr>
+        <tr><th>max_tokens</th><td><code>inferenceConfig.maxTokens</code></td><td>Hard output cap. Truncates mid-sentence (<code>stopReason: max_tokens</code>), bounds worst-case cost and counts toward token-per-minute quota.</td><td>Set to the realistic p99 output, not the model max.</td></tr>
+        <tr><th>stop_sequences</th><td><code>inferenceConfig.stopSequences</code></td><td>Ends generation when a string is emitted. Useful for structured or templated output and cutting rambling.</td><td>Up to 4 on most models.</td></tr>
+        <tr><th>reasoning budget</th><td><code>additionalModelRequestFields</code></td><td>Extended thinking on supported models (for example <code>{"thinking": {"type": "enabled", "budget_tokens": 4000}}</code>). Adds output tokens and latency, and constrains temperature.</td><td>Enable only for multi-step reasoning tasks.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</details>
+
+<details class="blk" data-pillar="1">
+  <summary>
+    <div class="meta">bedrock · create_guardrail · ApplyGuardrail</div>
+    <h3>Guardrails for Bedrock: PII, safety filters, denied topics</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="code"><div class="cap"><span>guardrail.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">import boto3
+bd = boto3.client("bedrock")
+
+g = bd.create_guardrail(
+    name="support-agent-gr",
+    blockedInputMessaging="I can't help with that request.",
+    blockedOutputsMessaging="I can't provide that response.",
+    contentPolicyConfig={"filtersConfig": [
+        {"type": "HATE",        "inputStrength": "HIGH", "outputStrength": "HIGH"},
+        {"type": "INSULTS",     "inputStrength": "HIGH", "outputStrength": "HIGH"},
+        {"type": "SEXUAL",      "inputStrength": "HIGH", "outputStrength": "HIGH"},
+        {"type": "VIOLENCE",    "inputStrength": "MEDIUM", "outputStrength": "HIGH"},
+        {"type": "MISCONDUCT",  "inputStrength": "HIGH", "outputStrength": "HIGH"},
+        {"type": "PROMPT_ATTACK", "inputStrength": "HIGH", "outputStrength": "NONE"},
+    ]},
+    topicPolicyConfig={"topicsConfig": [{
+        "name": "InvestmentAdvice", "type": "DENY",
+        "definition": "Recommendations on buying or selling specific securities.",
+        "examples": ["Should I buy NVDA?", "Which ETF will outperform next year?"],
+    }]},
+    sensitiveInformationPolicyConfig={
+        "piiEntitiesConfig": [
+            {"type": "EMAIL",              "action": "ANONYMIZE"},
+            {"type": "PHONE",              "action": "ANONYMIZE"},
+            {"type": "US_SOCIAL_SECURITY_NUMBER", "action": "BLOCK"},
+            {"type": "CREDIT_DEBIT_CARD_NUMBER",  "action": "BLOCK"},
+        ],
+        "regexesConfig": [{"name": "InternalAcct", "pattern": "ACCT-[0-9]{8}", "action": "ANONYMIZE"}],
+    },
+    contextualGroundingPolicyConfig={"filtersConfig": [
+        {"type": "GROUNDING", "threshold": 0.75},
+        {"type": "RELEVANCE", "threshold": 0.6},
+    ]},
+    kmsKeyId="arn:aws:kms:us-east-1:111122223333:key/abcd-...",
+)
+ver = bd.create_guardrail_version(guardrailIdentifier=g["guardrailId"])["version"]
+
+# Standalone check for any text, model-agnostic (RAG chunks, user input, third-party LLMs)
+brt.apply_guardrail(guardrailIdentifier=g["guardrailId"], guardrailVersion=ver,
+    source="INPUT", content=[{"text": {"text": user_text}}])</code></pre></div>
+    <div class="cols">
+      <div><h4>Behavior to remember</h4><ul>
+        <li><code>BLOCK</code> returns the blocked message. <code>ANONYMIZE</code> replaces with <code>{EMAIL}</code>-style tags and the call continues.</li>
+        <li>Version guardrails and pin the version in prod. <code>DRAFT</code> is mutable.</li>
+        <li>Grounding checks need the source passed as a <code>guardContent</code> block with qualifier <code>grounding_source</code>.</li>
+      </ul></div>
+      <div><h4>Streaming</h4><ul>
+        <li>Default is synchronous: chunks are scanned before release, adding latency.</li>
+        <li>Async mode lowers time-to-first-token but may emit text before it is flagged. Do not use it for hard PII blocking.</li>
+        <li>Guardrails are charged per text unit scanned, so scope filters to what you need.</li>
+      </ul></div>
+    </div>
+  </div>
+</details>
+
+<details class="blk" data-pillar="1">
+  <summary>
+    <div class="meta">bedrock-agent · bedrock-agent-runtime</div>
+    <h3>Knowledge Bases for Bedrock: RAG architecture mapping</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <figure class="diagram" style="margin:0 0 14px">
+      <figcaption>ingestion (top lane) and query (bottom lane)</figcaption>
+      <div class="scroll">
+      <svg class="dg" viewBox="0 0 980 300" role="img" aria-label="Knowledge Base ingestion and retrieval flow">
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c1b8c8"/></marker></defs>
+        <text class="zone-t" x="20" y="22">INGESTION · start_ingestion_job</text>
+        <rect class="n cy" x="20"  y="34" width="140" height="58" rx="8"/><text x="90"  y="58" text-anchor="middle">Data source</text><text class="sub" x="90" y="74" text-anchor="middle">S3 · web · Confluence</text>
+        <rect class="n ye" x="210" y="34" width="140" height="58" rx="8"/><text x="280" y="58" text-anchor="middle">Parse</text><text class="sub" x="280" y="74" text-anchor="middle">default · FM / BDA</text>
+        <rect class="n pu" x="400" y="34" width="140" height="58" rx="8"/><text x="470" y="58" text-anchor="middle">Chunk</text><text class="sub" x="470" y="74" text-anchor="middle">fixed · hierarchical · semantic</text>
+        <rect class="n pk" x="590" y="34" width="140" height="58" rx="8"/><text x="660" y="58" text-anchor="middle">Embed</text><text class="sub" x="660" y="74" text-anchor="middle">Titan v2 · Cohere</text>
+        <rect class="n gr" x="780" y="34" width="180" height="58" rx="8"/><text x="870" y="58" text-anchor="middle">Vector store</text><text class="sub" x="870" y="74" text-anchor="middle">AOSS · pgvector · S3 Vectors</text>
+        <path class="ln" marker-end="url(#ar2)" d="M160 63H210"/><path class="ln" marker-end="url(#ar2)" d="M350 63H400"/><path class="ln" marker-end="url(#ar2)" d="M540 63H590"/><path class="ln" marker-end="url(#ar2)" d="M730 63H780"/>
+
+        <text class="zone-t" x="20" y="150">QUERY · retrieve_and_generate</text>
+        <rect class="n ye" x="20"  y="162" width="140" height="58" rx="8"/><text x="90"  y="186" text-anchor="middle">User query</text><text class="sub" x="90" y="202" text-anchor="middle">+ metadata filter</text>
+        <rect class="n pk" x="210" y="162" width="140" height="58" rx="8"/><text x="280" y="186" text-anchor="middle">Embed query</text><text class="sub" x="280" y="202" text-anchor="middle">same model + dims</text>
+        <rect class="n gr" x="400" y="162" width="140" height="58" rx="8"/><text x="470" y="186" text-anchor="middle">Hybrid search</text><text class="sub" x="470" y="202" text-anchor="middle">top-k ANN + BM25</text>
+        <rect class="n or" x="590" y="162" width="140" height="58" rx="8"/><text x="660" y="186" text-anchor="middle">Rerank</text><text class="sub" x="660" y="202" text-anchor="middle">Cohere / Amazon rerank</text>
+        <rect class="n cy" x="780" y="162" width="180" height="58" rx="8"/><text x="870" y="186" text-anchor="middle">Generate</text><text class="sub" x="870" y="202" text-anchor="middle">Converse + Guardrails</text>
+        <path class="ln" marker-end="url(#ar2)" d="M160 191H210"/><path class="ln" marker-end="url(#ar2)" d="M350 191H400"/><path class="ln" marker-end="url(#ar2)" d="M540 191H590"/><path class="ln" marker-end="url(#ar2)" d="M730 191H780"/>
+        <path class="ln dash" marker-end="url(#ar2)" d="M870 92V120H470V162"/>
+        <text class="lbl" x="560" y="114">index consulted at query time</text>
+        <text class="sub" x="20" y="262">Output: answer + citations[] (source URI, chunk text, metadata). Use Retrieve to get chunks only and run your own prompt.</text>
+      </svg>
+      </div>
+    </figure>
+
+    <div class="code"><div class="cap"><span>kb_ingest_query.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">import boto3, time
+ba  = boto3.client("bedrock-agent")
+bar = boto3.client("bedrock-agent-runtime")
+
+# 1) Ingestion sync (after S3 changes; trigger from EventBridge/S3 events, debounced)
+job = ba.start_ingestion_job(knowledgeBaseId="KB12345678", dataSourceId="DS12345678")["ingestionJob"]
+while job["status"] in ("STARTING", "IN_PROGRESS"):
+    time.sleep(10)
+    job = ba.get_ingestion_job(knowledgeBaseId="KB12345678", dataSourceId="DS12345678",
+                               ingestionJobId=job["ingestionJobId"])["ingestionJob"]
+print(job["status"], job.get("statistics"))
+
+# 2a) Retrieve only (you own the prompt)
+hits = bar.retrieve(
+    knowledgeBaseId="KB12345678",
+    retrievalQuery={"text": "What is the refund window?"},
+    retrievalConfiguration={"vectorSearchConfiguration": {
+        "numberOfResults": 8, "overrideSearchType": "HYBRID",
+        "filter": {"equals": {"key": "region", "value": "US"}},
+        "rerankingConfiguration": {"type": "BEDROCK_RERANKING_MODEL",
+            "bedrockRerankingConfiguration": {
+              "modelConfiguration": {"modelArn": "arn:aws:bedrock:us-west-2::foundation-model/amazon.rerank-v1:0"},
+              "numberOfRerankedResults": 4}}}},
+)
+
+# 2b) Retrieve + generate with citations
+ans = bar.retrieve_and_generate(
+    input={"text": "What is the refund window?"},
+    retrieveAndGenerateConfiguration={"type": "KNOWLEDGE_BASE",
+      "knowledgeBaseConfiguration": {
+        "knowledgeBaseId": "KB12345678",
+        "modelArn": "arn:aws:bedrock:us-east-1:111122223333:inference-profile/" + MODEL,
+        "generationConfiguration": {"guardrailConfiguration":
+            {"guardrailId": "gr-abc123", "guardrailVersion": "3"}},
+        "retrievalConfiguration": {"vectorSearchConfiguration": {"numberOfResults": 6}}}},
+)
+print(ans["output"]["text"], ans["citations"][0]["retrievedReferences"][0]["location"])</code></pre></div>
+
+    <div class="tbl"><table>
+      <thead><tr><th>Decision</th><th>Options</th><th>Guidance</th></tr></thead>
+      <tbody>
+        <tr><th>Chunking</th><td>Fixed-size, hierarchical (parent/child), semantic, none</td><td>Start fixed at 300 to 512 tokens with 10 to 20% overlap. Hierarchical for long structured docs: match on child, return parent for context.</td></tr>
+        <tr><th>Embedding</th><td>Titan Text Embeddings V2 (256/512/1024 dims), Cohere Embed</td><td>Dimension is fixed at index creation. Changing the model means re-indexing. 1024 for quality, 512 or 256 to cut storage.</td></tr>
+        <tr><th>Vector store</th><td>OpenSearch Serverless, Aurora pgvector, Neptune Analytics, S3 Vectors, Pinecone, Redis Enterprise Cloud, MongoDB Atlas</td><td>See the comparison in pillar 03. Field mapping (vector, text, metadata) must match the index.</td></tr>
+        <tr><th>Search</th><td><code>SEMANTIC</code> or <code>HYBRID</code></td><td>Hybrid adds keyword scoring and helps with IDs, acronyms and product names. Needs a store that supports it.</td></tr>
+        <tr><th>Metadata</th><td>Sidecar <code>file.pdf.metadata.json</code> in S3</td><td>Filter by tenant, region, doc type and ACL at query time. This is your multi-tenant isolation lever.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</details>
+
+<!-- ======================= PILLAR 2 ======================= -->
+<header class="pillar-head" id="p2" style="--c:var(--p2)">
+  <span class="num">02 / agentic_development.py</span>
+  <h2>Agentic development &amp; orchestration</h2>
+  <p>Bedrock Agents, AgentCore, open-source frameworks on AWS compute, state and checkpointing, and tool use.</p>
+</header>
+
+<details class="blk" open data-pillar="2">
+  <summary>
+    <div class="meta">bedrock-agent · bedrock-agent-runtime</div>
+    <h3>Amazon Bedrock Agents: components and multi-turn pattern</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="tbl"><table>
+      <thead><tr><th>Component</th><th>What it is</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><th>Agent</th><td>Foundation model, <code>instruction</code>, resource role, idle session TTL, optional guardrail and encryption key</td><td>Edit <code>DRAFT</code>, call <code>prepare_agent</code>, then point an alias at a numbered version.</td></tr>
+        <tr><th>Action group</th><td>Set of callable operations backed by a Lambda executor, or by return of control to your app</td><td>Define with an OpenAPI 3 schema (S3 or inline) or a function-detail schema.</td></tr>
+        <tr><th>Knowledge base</th><td>Attached KB the agent queries automatically</td><td>Description drives when the agent decides to retrieve.</td></tr>
+        <tr><th>Alias</th><td>Stable pointer to an agent version</td><td>Clients call alias ID. Roll back by re-pointing.</td></tr>
+        <tr><th>Session state</th><td><code>sessionAttributes</code> persist for the session. <code>promptSessionAttributes</code> last one turn.</td><td>Reuse <code>sessionId</code> for multi-turn. Pass <code>memoryId</code> to enable cross-session summary memory.</td></tr>
+        <tr><th>Return of control</th><td>Agent returns the pending invocation to your code instead of calling Lambda</td><td>Use for human approval, client-side tools, or long-running work.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="cols">
+      <div>
+        <div class="code"><div class="cap"><span>action_group_lambda.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">import json
+
+def handler(event, ctx):
+    path   = event["apiPath"]
+    params = {p["name"]: p["value"] for p in event.get("parameters", [])}
+    if path == "/orders/{orderId}":
+        result = {"orderId": params["orderId"], "status": "SHIPPED"}
+        code = 200
+    else:
+        result, code = {"error": "not found"}, 404
+
+    return {
+        "messageVersion": "1.0",
+        "response": {
+            "actionGroup": event["actionGroup"],
+            "apiPath": path,
+            "httpMethod": event["httpMethod"],
+            "httpStatusCode": code,
+            "responseBody": {"application/json": {"body": json.dumps(result)}},
+        },
+        "sessionAttributes": event.get("sessionAttributes", {}),
+        "promptSessionAttributes": event.get("promptSessionAttributes", {}),
+    }</code></pre></div>
+      </div>
+      <div>
+        <div class="code"><div class="cap"><span>openapi.yaml</span><button type="button" class="cp">copy</button></div><pre><code data-lang="yaml">openapi: 3.0.0
+info: {title: Orders API, version: "1.0"}
+paths:
+  /orders/{orderId}:
+    get:
+      operationId: getOrder
+      description: Look up the status of an order by ID.
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Order identifier, e.g. ORD-1042
+          schema: {type: string}
+      responses:
+        "200":
+          description: Order status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId: {type: string}
+                  status:  {type: string}</code></pre></div>
+        <div class="call" style="--c:var(--cyan)"><b class="k">schema tip</b><p>Descriptions are the prompt. The model picks tools from <code>description</code> text on operations and parameters, so write them like instructions.</p></div>
+      </div>
+    </div>
+
+    <h4>Multi-turn invocation with session state and memory</h4>
+    <div class="code"><div class="cap"><span>invoke_agent.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">import boto3, uuid
+bar = boto3.client("bedrock-agent-runtime")
+session_id = str(uuid.uuid4())            # one per conversation; reuse for every turn
+
+def ask(text, user_id="user-123"):
+    resp = bar.invoke_agent(
+        agentId="AGENT12345", agentAliasId="ALIAS12345",
+        sessionId=session_id, inputText=text,
+        enableTrace=True,                  # reasoning, tool calls, KB hits
+        memoryId=user_id,                  # needs memory enabled on the agent
+        sessionState={
+            "sessionAttributes":       {"tenant": "acme", "tier": "gold"},   # persist
+            "promptSessionAttributes": {"today": "2026-10-05"},              # this turn only
+        },
+    )
+    out = ""
+    for ev in resp["completion"]:
+        if "chunk" in ev:
+            out += ev["chunk"]["bytes"].decode()
+        elif "trace" in ev:
+            pass                           # log ev["trace"]["trace"] to CloudWatch
+        elif "returnControl" in ev:
+            # execute client-side, then call invoke_agent again with
+            # sessionState={"invocationId": ..., "returnControlInvocationResults": [...]}
+            ...
+    return out
+
+ask("Where is order ORD-1042?")
+ask("And when will it arrive?")           # same session_id gives it context</code></pre></div>
+    <div class="call" style="--c:var(--orange)"><b class="k">gotcha</b><ul><li><code>idleSessionTTLInSeconds</code> expires the session. After that the history is gone unless you saved it or use memory.</li><li>Lambda action-group timeout is the agent step timeout. Keep tools under about 25 s and push long jobs to Step Functions with a polling tool.</li><li>Lambda needs a resource-based permission for <code>bedrock.amazonaws.com</code> scoped to the agent ARN.</li></ul></div>
+  </div>
+</details>
+
+<details class="blk" open data-pillar="2">
+  <summary>
+    <div class="meta">bedrock-agentcore · preview features move fast, check docs</div>
+    <h3>Amazon Bedrock AgentCore</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <p>Managed building blocks for running any agent, built with any framework (Strands, LangGraph, CrewAI, OpenAI Agents SDK) and any model, not only Bedrock models.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Capability</th><th>What it does</th><th>Use when</th></tr></thead>
+      <tbody>
+        <tr><th>Runtime</th><td>Serverless hosting with per-session microVM isolation, streaming, long-running sessions and async work</td><td>Replace self-managed Fargate/Lambda hosting for agents.</td></tr>
+        <tr><th>Memory</th><td>Short-term session events plus long-term strategies (summary, semantic, user preference) managed for you</td><td>You want durable personalization without building a memory store.</td></tr>
+        <tr><th>Gateway</th><td>Turns APIs, Lambda functions and OpenAPI specs into MCP-compatible tools with auth and tool discovery</td><td>Many tools shared across agents and teams.</td></tr>
+        <tr><th>Identity</th><td>Inbound auth (Cognito, Okta, Entra, OIDC) and outbound token vault for OAuth to third-party APIs</td><td>Agents act on behalf of users in SaaS systems.</td></tr>
+        <tr><th>Code Interpreter</th><td>Sandboxed code execution</td><td>Analysis, charts, data transforms generated by the model.</td></tr>
+        <tr><th>Browser</th><td>Managed headless browser sandbox</td><td>Web navigation and form-filling agents.</td></tr>
+        <tr><th>Observability</th><td>OpenTelemetry traces and dashboards in CloudWatch</td><td>Step-level latency, tool errors, token and cost attribution.</td></tr>
+        <tr><th>Policy / Evaluations</th><td>Deterministic tool-call authorization policies, and continuous quality scoring of agent traces</td><td>Guardrails on tool access and online evals. Confirm GA status and region availability.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="cols">
+      <div>
+        <div class="code"><div class="cap"><span>agent.py (Strands on AgentCore Runtime)</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">from bedrock_agentcore.runtime import BedrockAgentCoreApp
+from strands import Agent
+from strands.models import BedrockModel
+
+app   = BedrockAgentCoreApp()
+agent = Agent(
+    model=BedrockModel(model_id="us.anthropic.claude-sonnet-4-5-20250929-v1:0"),
+    system_prompt="You are a support agent.",
+)
+
+@app.entrypoint
+def invoke(payload, context):
+    return {"result": str(agent(payload.get("prompt", "")))}
+
+if __name__ == "__main__":
+    app.run()          # serves /invocations and /ping on :8080</code></pre></div>
+      </div>
+      <div>
+        <div class="code"><div class="cap"><span>deploy + invoke</span><button type="button" class="cp">copy</button></div><pre><code data-lang="bash">pip install bedrock-agentcore bedrock-agentcore-starter-toolkit strands-agents
+agentcore configure -e agent.py        # ECR repo, role, memory options
+agentcore launch                       # build, push, create runtime
+agentcore invoke '{"prompt": "Hello"}'
+
+# SDK
+python - &lt;&lt;'PY'
+import boto3, json
+c = boto3.client("bedrock-agentcore")
+r = c.invoke_agent_runtime(
+    agentRuntimeArn="arn:aws:bedrock-agentcore:us-east-1:111122223333:runtime/support-abc",
+    runtimeSessionId="a-session-id-at-least-33-characters-long",
+    payload=json.dumps({"prompt": "Hi"}))
+print(r["response"].read())
+PY</code></pre></div>
+      </div>
+    </div>
+    <div class="call" style="--c:var(--cyan)"><b class="k">decision</b><p>Bedrock Agents is the lowest-code path with managed orchestration. AgentCore is for custom orchestration code you want to run serverlessly with isolation, identity and memory. Self-hosted Fargate/EKS wins when you need custom networking, GPUs or sidecars.</p></div>
+  </div>
+</details>
+
+<details class="blk" data-pillar="2">
+  <summary>
+    <div class="meta">LangChain · LangGraph · AutoGen · CrewAI</div>
+    <h3>Open-source frameworks on AWS compute</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="tbl"><table>
+      <thead><tr><th>Runtime</th><th>Best for</th><th>Scaling and limits</th><th>Pattern</th></tr></thead>
+      <tbody>
+        <tr><th>Lambda</th><td>Short, event-driven, stateless agents. Webhooks, SQS-triggered jobs, simple tool loops.</td><td>15 min max. Scales per request. Cold starts with heavy deps (use container images or SnapStart-style warm pools). Response streaming via Function URL.</td><td>Checkpoint every step to DynamoDB so a retry resumes. Behind SQS for backpressure.</td></tr>
+        <tr><th>ECS on Fargate</th><td>Long-running, streaming (SSE/WebSocket) agents with steady traffic. Default for LangGraph and CrewAI services.</td><td>Target-tracking on CPU, memory or ALB request count per target. Keep tasks stateless; set ALB idle timeout above your longest stream.</td><td>FastAPI + uvicorn container, ALB, Secrets Manager, task role scoped to Bedrock and state stores.</td></tr>
+        <tr><th>EKS</th><td>Many agent services, shared platform, GPUs or self-hosted models, service mesh.</td><td>HPA/KEDA on queue depth or custom metrics. Karpenter for nodes. IRSA or Pod Identity for IAM.</td><td>Helm chart per agent, NetworkPolicies, OTel collector DaemonSet.</td></tr>
+        <tr><th>AgentCore Runtime</th><td>Any framework without managing containers' scaling or session isolation.</td><td>Managed. Per-session isolation, long sessions.</td><td>Wrap with <code>BedrockAgentCoreApp</code>.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="cols">
+      <div><h4>Framework notes</h4><ul>
+        <li><strong>LangGraph</strong>: explicit state machine, checkpointers, human-in-the-loop interrupts. Best fit for production control flow.</li>
+        <li><strong>LangChain</strong>: <code>ChatBedrockConverse</code> from <code>langchain-aws</code>, retrievers for Knowledge Bases.</li>
+        <li><strong>CrewAI / AutoGen</strong>: role-based multi-agent. Budget turn limits and token caps, as loops multiply cost quickly.</li>
+        <li><strong>Strands Agents</strong>: AWS open-source SDK, native Bedrock and AgentCore integration.</li>
+      </ul></div>
+      <div><h4>Production checklist</h4><ul>
+        <li>Hard caps: max iterations, max tool calls, wall-clock deadline per request.</li>
+        <li>Idempotency keys on every side-effecting tool.</li>
+        <li>Concurrency limiter per model to stay under Bedrock TPM/RPM quotas.</li>
+        <li>Graceful SIGTERM: finish or checkpoint in-flight runs.</li>
+      </ul></div>
+    </div>
+  </div>
+</details>
+
+<details class="blk" data-pillar="2">
+  <summary>
+    <div class="meta">DynamoDB · ElastiCache (Redis/Valkey)</div>
+    <h3>State management: agent memory and checkpointing</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="tbl"><table>
+      <thead><tr><th>Store</th><th>Use for</th><th>Trade-offs</th></tr></thead>
+      <tbody>
+        <tr><th>DynamoDB</th><td>Durable checkpoints, conversation history, long-term memory. On-demand capacity, TTL for retention.</td><td>400 KB item limit (spill big state to S3 and store the pointer). Single-digit ms. No ops.</td></tr>
+        <tr><th>ElastiCache (Valkey/Redis)</th><td>Hot session context, rate limiting, locks, semantic cache, short-TTL scratch state.</td><td>Sub-ms reads, but in-memory cost. Persistence is weaker than DynamoDB. Use Multi-AZ replication.</td></tr>
+        <tr><th>S3</th><td>Large artifacts, transcripts, tool outputs</td><td>Store reference in the checkpoint.</td></tr>
+        <tr><th>Aurora / pgvector</th><td>Long-term semantic memory with relational joins</td><td>Heavier. Good if you already run it.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="cols">
+      <div>
+        <div class="code"><div class="cap"><span>langgraph_checkpoint.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">from langgraph.graph import StateGraph, MessagesState, START, END
+from langgraph.prebuilt import ToolNode, tools_condition
+from langchain_aws import ChatBedrockConverse
+from langgraph_checkpoint_aws import DynamoDBSaver   # verify args for your version
+
+llm = ChatBedrockConverse(model="us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+                          temperature=0.1).bind_tools(TOOLS)
+
+def agent(state: MessagesState):
+    return {"messages": [llm.invoke(state["messages"])]}
+
+g = StateGraph(MessagesState)
+g.add_node("agent", agent)
+g.add_node("tools", ToolNode(TOOLS))
+g.add_edge(START, "agent")
+g.add_conditional_edges("agent", tools_condition)
+g.add_edge("tools", "agent")
+
+app = g.compile(checkpointer=DynamoDBSaver(table_name="agent-checkpoints"))
+cfg = {"configurable": {"thread_id": "tenant42:user7:conv9"}}
+app.invoke({"messages": [("user", "Check order ORD-1042")]}, cfg)
+app.invoke({"messages": [("user", "And its ETA?")]}, cfg)      # resumes thread</code></pre></div>
+      </div>
+      <div>
+        <div class="code"><div class="cap"><span>DynamoDB table design</span><button type="button" class="cp">copy</button></div><pre><code data-lang="yaml">TableName: agent-checkpoints
+BillingMode: PAY_PER_REQUEST
+KeySchema:
+  - {AttributeName: pk, KeyType: HASH}    # thread_id
+  - {AttributeName: sk, KeyType: RANGE}   # ts#step or checkpoint_id
+TimeToLiveSpecification:
+  AttributeName: expires_at               # epoch seconds, GDPR/retention
+  Enabled: true
+SSESpecification: {SSEEnabled: true, SSEType: KMS, KMSMasterKeyId: alias/agent-state}
+PointInTimeRecoverySpecification: {PointInTimeRecoveryEnabled: true}
+# Large payloads: put JSON in S3, store {s3_uri, sha256} in the item</code></pre></div>
+        <div class="call" style="--c:var(--green)"><b class="k">pattern</b><p>Valkey in front, DynamoDB behind: read-through for the active window of messages, write-through checkpoints every graph step. Key by <code>tenant:user:conversation</code> to keep isolation obvious in IAM conditions and logs.</p></div>
+      </div>
+    </div>
+  </div>
+</details>
+
+<details class="blk" data-pillar="2">
+  <summary>
+    <div class="meta">Converse toolConfig · tool_use loop</div>
+    <h3>Tool use (function calling) with Converse</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <figure class="diagram" style="margin:0 0 14px">
+      <figcaption>converse tool loop</figcaption>
+      <div class="scroll">
+      <svg class="dg" viewBox="0 0 960 230" role="img" aria-label="Converse tool-use loop">
+        <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c1b8c8"/></marker></defs>
+        <rect class="n ye" x="20" y="40" width="150" height="58" rx="8"/><text x="95" y="64" text-anchor="middle">messages + toolConfig</text><text class="sub" x="95" y="80" text-anchor="middle">system · history</text>
+        <rect class="n cy" x="225" y="40" width="150" height="58" rx="8"/><text x="300" y="64" text-anchor="middle">converse()</text><text class="sub" x="300" y="80" text-anchor="middle">model decides</text>
+        <rect class="n pu" x="430" y="40" width="170" height="58" rx="8"/><text x="515" y="64" text-anchor="middle">stopReason?</text><text class="sub" x="515" y="80" text-anchor="middle">tool_use | end_turn</text>
+        <rect class="n or" x="655" y="40" width="130" height="58" rx="8"/><text x="720" y="64" text-anchor="middle">Run tool</text><text class="sub" x="720" y="80" text-anchor="middle">validate · authorize</text>
+        <rect class="n gr" x="430" y="150" width="170" height="52" rx="8"/><text x="515" y="172" text-anchor="middle">Final answer</text><text class="sub" x="515" y="188" text-anchor="middle">return to caller</text>
+        <rect class="n pk" x="655" y="150" width="130" height="52" rx="8"/><text x="720" y="172" text-anchor="middle">toolResult</text><text class="sub" x="720" y="188" text-anchor="middle">append as user msg</text>
+        <path class="ln" marker-end="url(#ar3)" d="M170 69H225"/><path class="ln" marker-end="url(#ar3)" d="M375 69H430"/>
+        <path class="ln" marker-end="url(#ar3)" d="M600 69H655"/><text class="lbl" x="606" y="62">tool_use</text>
+        <path class="ln" marker-end="url(#ar3)" d="M515 98V150"/><text class="lbl" x="523" y="128">end_turn</text>
+        <path class="ln" marker-end="url(#ar3)" d="M720 98V150"/>
+        <path class="ln dash" marker-end="url(#ar3)" d="M655 176H300V98"/><text class="lbl" x="330" y="168">loop with max_iterations</text>
+      </svg>
+      </div>
+    </figure>
+    <div class="code"><div class="cap"><span>tool_loop.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">tools = {"tools": [{
+    "toolSpec": {
+        "name": "get_order_status",
+        "description": "Look up shipping status for an order ID like ORD-1042.",
+        "inputSchema": {"json": {
+            "type": "object",
+            "properties": {"order_id": {"type": "string", "pattern": "^ORD-[0-9]+$"}},
+            "required": ["order_id"]}}}}],
+    "toolChoice": {"auto": {}}}       # or {"any": {}} / {"tool": {"name": "..."}}
+
+def get_order_status(order_id): return {"order_id": order_id, "status": "SHIPPED"}
+REGISTRY = {"get_order_status": get_order_status}
+
+messages = [{"role": "user", "content": [{"text": "Where is ORD-1042?"}]}]
+for _ in range(6):                                    # hard iteration cap
+    r = brt.converse(modelId=MODEL, messages=messages, toolConfig=tools,
+                     inferenceConfig={"maxTokens": 1024, "temperature": 0})
+    msg = r["output"]["message"]
+    messages.append(msg)
+    if r["stopReason"] != "tool_use":
+        break
+    results = []
+    for block in msg["content"]:
+        if "toolUse" in block:
+            tu = block["toolUse"]
+            try:
+                out = REGISTRY[tu["name"]](**tu["input"])
+                results.append({"toolResult": {"toolUseId": tu["toolUseId"],
+                                               "content": [{"json": out}]}})
+            except Exception as e:
+                results.append({"toolResult": {"toolUseId": tu["toolUseId"], "status": "error",
+                                               "content": [{"text": str(e)}]}})
+    messages.append({"role": "user", "content": results})
+print(msg["content"][0]["text"])</code></pre></div>
+    <div class="call" style="--c:var(--orange)"><b class="k">rules</b><ul><li>Return every <code>toolUseId</code> from a turn in a single user message, including parallel calls.</li><li>Validate model-produced arguments against the schema server-side. Authorize with the caller's identity, not the agent's.</li><li>Return errors as <code>status: "error"</code> so the model can recover instead of crashing the loop.</li></ul></div>
+  </div>
+</details>
+
+<!-- ======================= PILLAR 3 ======================= -->
+<header class="pillar-head" id="p3" style="--c:var(--p3)">
+  <span class="num">03 / data_and_vectors.py</span>
+  <h2>Data pipelines &amp; vector storage</h2>
+  <p>Getting documents and events into embeddings, and choosing where to keep them.</p>
+</header>
+
+<details class="blk" open data-pillar="3">
+  <summary>
+    <div class="meta">S3 · Glue · Kinesis · Step Functions</div>
+    <h3>Data ingestion for LLMs: chunk and embed pipelines</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="tbl"><table>
+      <thead><tr><th>Pattern</th><th>Flow</th><th>Use when</th></tr></thead>
+      <tbody>
+        <tr><th>Managed (KB)</th><td>S3 to Knowledge Base ingestion job</td><td>Standard documents. Least code.</td></tr>
+        <tr><th>Batch ETL</th><td>S3 to EventBridge to Step Functions to Glue (Spark/Ray) parse + chunk, then batch embed, then bulk index</td><td>Millions of docs, custom parsing, dedup, PII scrub, enrichment.</td></tr>
+        <tr><th>Event-driven</th><td>S3 event to SQS to Lambda: chunk, embed, upsert</td><td>Incremental, low-volume updates. Cap Lambda concurrency to protect embedding quotas.</td></tr>
+        <tr><th>Streaming</th><td>Kinesis Data Streams to Lambda or Managed Flink: window, chunk, embed, upsert</td><td>Tickets, chat, logs, CDC feeds needing minute-level freshness.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="code"><div class="cap"><span>chunk_embed_index.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">import boto3, json, hashlib
+from opensearchpy import OpenSearch, RequestsHttpConnection, AWSV4SignerAuth
+
+brt  = boto3.client("bedrock-runtime")
+auth = AWSV4SignerAuth(boto3.Session().get_credentials(), "us-east-1", "aoss")
+os_  = OpenSearch(hosts=[{"host": "abc123.us-east-1.aoss.amazonaws.com", "port": 443}],
+                  http_auth=auth, use_ssl=True, connection_class=RequestsHttpConnection)
+
+def chunk(text, size=400, overlap=60):             # tokens approximated by words
+    w = text.split()
+    for i in range(0, len(w), size - overlap):
+        yield " ".join(w[i:i + size])
+
+def embed(t):
+    r = brt.invoke_model(modelId="amazon.titan-embed-text-v2:0",
+        body=json.dumps({"inputText": t, "dimensions": 1024, "normalize": True}))
+    return json.loads(r["body"].read())["embedding"]
+
+def index_doc(doc_id, text, meta):
+    for n, c in enumerate(chunk(text)):
+        cid = hashlib.sha256(f"{doc_id}:{n}:{c}".encode()).hexdigest()   # idempotent
+        os_.index(index="docs", id=cid, body={
+            "text": c, "vec": embed(c), "doc_id": doc_id, "chunk": n, **meta})</code></pre></div>
+    <div class="cols">
+      <div><h4>Pipeline hygiene</h4><ul>
+        <li>Deterministic chunk IDs for upserts. Store a doc hash to skip unchanged files.</li>
+        <li>Deletion path: tombstone then purge <code>doc_id</code> from the vector store, or stale answers survive.</li>
+        <li>Attach ACL, tenant and source metadata at ingest, not query time.</li>
+        <li>Dead-letter queue for failed docs with the parser error attached.</li>
+      </ul></div>
+      <div><h4>Cost levers</h4><ul>
+        <li>Bedrock batch inference for bulk embedding backfills.</li>
+        <li>Truncate embedding dimensions (512/256) if recall holds in your eval.</li>
+        <li>Chunk dedup (near-duplicate boilerplate) before embedding.</li>
+        <li>Do not re-embed on metadata-only changes.</li>
+      </ul></div>
+    </div>
+  </div>
+</details>
+
+<details class="blk" open data-pillar="3">
+  <summary>
+    <div class="meta">vector_db_comparison.md</div>
+    <h3>AWS vector databases compared</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="tbl"><table>
+      <thead><tr><th>Store</th><th>Best used for</th><th>Scaling characteristics</th><th>Index types</th></tr></thead>
+      <tbody>
+        <tr><th>OpenSearch Serverless (vector search collection)</th><td>Managed default for Knowledge Bases. Hybrid keyword + vector, large corpora, rich filtering, analytics on the same data.</td><td>Auto-scales OCUs for indexing and search independently. Minimum OCU floor makes small workloads relatively costly. Seconds-level refresh.</td><td>HNSW (Faiss engine). IVF and PQ variants are available on provisioned OpenSearch Service domains rather than Serverless.</td></tr>
+        <tr><th>Aurora PostgreSQL (pgvector)</th><td>Vectors next to relational data: transactional joins, row-level security, existing Postgres skills. Moderate corpus sizes.</td><td>Scale up (instance class or Serverless v2 ACUs) and out via read replicas. Index build and memory are the limits at tens of millions of vectors.</td><td>HNSW and IVFFlat. Tune <code>m</code>, <code>ef_construction</code>, <code>hnsw.ef_search</code>, <code>ivfflat.probes</code>. <code>halfvec</code> for large dimensions.</td></tr>
+        <tr><th>MemoryDB (Redis OSS-compatible)</th><td>Ultra-low-latency retrieval, semantic caching, real-time recommendations, agent memory with durability.</td><td>Memory-bound: shards x node size. Multi-AZ durable log. Cost scales with RAM, so best for hot or smaller sets.</td><td>HNSW and FLAT (exact). Distance metrics: L2, IP, cosine.</td></tr>
+        <tr><th>S3 Vectors (bonus)</th><td>Cheap, durable storage for very large, infrequently queried vector sets. Also a Knowledge Base store option.</td><td>Serverless, elastic storage. Higher query latency than in-memory stores. Check current per-index limits.</td><td>Managed ANN, not user-tunable.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="code"><div class="cap"><span>pgvector.sql</span><button type="button" class="cp">copy</button></div><pre><code data-lang="sql">CREATE EXTENSION IF NOT EXISTS vector;
+CREATE TABLE chunks (
+  id        uuid PRIMARY KEY,
+  tenant_id text NOT NULL,
+  doc_id    text NOT NULL,
+  content   text NOT NULL,
+  metadata  jsonb,
+  embedding vector(1024)
+);
+CREATE INDEX ON chunks USING hnsw (embedding vector_cosine_ops)
+  WITH (m = 16, ef_construction = 64);
+CREATE INDEX ON chunks (tenant_id);
+
+SET hnsw.ef_search = 100;                      -- recall vs latency knob
+SET hnsw.iterative_scan = relaxed_order;       -- pgvector 0.8+: keeps filtered queries full
+SELECT id, content, 1 - (embedding &lt;=&gt; $1) AS score
+FROM chunks WHERE tenant_id = $2
+ORDER BY embedding &lt;=&gt; $1 LIMIT 8;</code></pre></div>
+    <div class="call" style="--c:var(--green)"><b class="k">pick fast</b><ul><li>Using Knowledge Bases and no strong preference: <strong>OpenSearch Serverless</strong> or <strong>S3 Vectors</strong> (cost).</li><li>Need joins, transactions or RLS: <strong>Aurora pgvector</strong>.</li><li>Need single-digit-ms and caching: <strong>MemoryDB</strong>, usually alongside a primary store.</li></ul></div>
+  </div>
+</details>
+
+<!-- ======================= PILLAR 4 ======================= -->
+<header class="pillar-head" id="p4" style="--c:var(--p4)">
+  <span class="num">04 / mlops_eval_observability.py</span>
+  <h2>MLOps, evaluation &amp; observability</h2>
+  <p>Measure quality, watch production, control spend, and lock down who can call what.</p>
+</header>
+
+<details class="blk" open data-pillar="4">
+  <summary>
+    <div class="meta">Bedrock Model Evaluation · Ragas · TruLens</div>
+    <h3>LLM evaluation: LLM-as-a-judge and the RAG triad</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="tbl"><table>
+      <thead><tr><th>Mode</th><th>What it gives you</th><th>Use for</th></tr></thead>
+      <tbody>
+        <tr><th>Bedrock automatic (programmatic)</th><td>Built-in metrics (accuracy, robustness, toxicity) on curated or custom datasets</td><td>Fast model-vs-model baseline on standard tasks.</td></tr>
+        <tr><th>Bedrock LLM-as-a-judge</th><td>A judge model scores your outputs on correctness, completeness, helpfulness, faithfulness, harmfulness, refusal, or your custom metrics</td><td>Prompt and model comparisons at scale without human labelers.</td></tr>
+        <tr><th>Bedrock RAG evaluation</th><td>Retrieve-only and retrieve-and-generate jobs against a Knowledge Base (or your own pipeline output)</td><td>Tune chunking, top-k, rerank, and generation prompts.</td></tr>
+        <tr><th>Bedrock human-based</th><td>Your workforce or an AWS-managed team rates responses on custom criteria</td><td>Brand voice, domain nuance, calibrating the judge.</td></tr>
+        <tr><th>Ragas / TruLens (self-run)</th><td>Open-source metrics run in CodeBuild, Batch, SageMaker Processing or a Lambda container, with Bedrock as the judge and embeddings</td><td>CI gates, custom pipelines, multi-agent traces.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="tbl"><table>
+      <thead><tr><th>RAG triad leg</th><th>Question</th><th>Typical failure</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><th>Context relevance</th><td>Did retrieval fetch what the query needs?</td><td>Wrong or noisy chunks</td><td>Chunking, hybrid search, rerank, metadata filters, query rewrite</td></tr>
+        <tr><th>Groundedness (faithfulness)</th><td>Is every claim supported by the context?</td><td>Hallucination beyond the sources</td><td>Stricter prompt, contextual grounding guardrail, lower temperature, citations required</td></tr>
+        <tr><th>Answer relevance</th><td>Does the answer address the question?</td><td>Correct but off-topic or evasive</td><td>Prompt, output schema, model choice</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="cols">
+      <div>
+        <div class="code"><div class="cap"><span>judge.py (custom LLM-as-judge)</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">import json
+RUBRIC = """Score 1-5 for each: groundedness (claims supported by CONTEXT),
+answer_relevance, completeness. Return ONLY JSON:
+{"groundedness":int,"answer_relevance":int,"completeness":int,"reason":str}"""
+
+def judge(question, context, answer, judge_model=JUDGE_MODEL):
+    r = brt.converse(modelId=judge_model,
+        system=[{"text": RUBRIC}],
+        messages=[{"role": "user", "content": [{"text":
+            f"QUESTION:\n{question}\n\nCONTEXT:\n{context}\n\nANSWER:\n{answer}"}]}],
+        inferenceConfig={"temperature": 0, "maxTokens": 400})
+    return json.loads(r["output"]["message"]["content"][0]["text"])
+
+# CI gate
+scores = [judge(**row) for row in golden_set]
+assert sum(s["groundedness"] for s in scores) / len(scores) &gt;= 4.2</code></pre></div>
+      </div>
+      <div>
+        <div class="code"><div class="cap"><span>ragas_run.py (pin your Ragas version)</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">from ragas import evaluate, EvaluationDataset
+from ragas.metrics import faithfulness, answer_relevancy, context_precision, context_recall
+from ragas.llms import LangchainLLMWrapper
+from ragas.embeddings import LangchainEmbeddingsWrapper
+from langchain_aws import ChatBedrockConverse, BedrockEmbeddings
+
+llm = LangchainLLMWrapper(ChatBedrockConverse(model=JUDGE_MODEL, temperature=0))
+emb = LangchainEmbeddingsWrapper(BedrockEmbeddings(model_id="amazon.titan-embed-text-v2:0"))
+
+ds = EvaluationDataset.from_list([{
+    "user_input": q, "retrieved_contexts": ctxs,
+    "response": ans, "reference": gold} for q, ctxs, ans, gold in rows])
+
+res = evaluate(ds, metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
+               llm=llm, embeddings=emb)
+print(res.to_pandas().describe())</code></pre></div>
+      </div>
+    </div>
+    <div class="call" style="--c:var(--pink)"><b class="k">judge hygiene</b><ul><li>Use a different, stronger model family than the one under test, temperature 0, and a structured rubric.</li><li>Calibrate against 50 to 100 human-labeled examples. Track judge agreement.</li><li>Keep a versioned golden set in S3 or git. Add every production failure to it.</li></ul></div>
+  </div>
+</details>
+
+<details class="blk" open data-pillar="4">
+  <summary>
+    <div class="meta">CloudWatch · CloudTrail · S3 · KMS</div>
+    <h3>Monitoring &amp; observability</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="tbl"><table>
+      <thead><tr><th>Signal</th><th>Source</th><th>Alarm on</th></tr></thead>
+      <tbody>
+        <tr><th>Latency</th><td><code>AWS/Bedrock</code> <code>InvocationLatency</code> (dim: ModelId), time-to-first-token where available, app-side p50/p95/p99</td><td>p95 above SLO for 5 min</td></tr>
+        <tr><th>Tokens</th><td><code>InputTokenCount</code>, <code>OutputTokenCount</code>; cache read/write counts in <code>usage</code></td><td>Burn rate above daily budget</td></tr>
+        <tr><th>Errors</th><td><code>InvocationClientErrors</code>, <code>InvocationServerErrors</code>, <code>InvocationThrottles</code></td><td>Throttles greater than 0 sustained</td></tr>
+        <tr><th>Cost</th><td>Metric math (tokens x price), Cost Explorer by tag, CUR/Data Exports</td><td>Budgets at 80% and 100% per team</td></tr>
+        <tr><th>Quality</th><td>Online eval samples, user feedback, guardrail interventions (<code>InvocationsIntervened</code>)</td><td>Groundedness drop, intervention spike</td></tr>
+        <tr><th>Agent traces</th><td>AgentCore Observability, or OpenTelemetry (ADOT) to X-Ray / CloudWatch with <code>gen_ai.*</code> attributes</td><td>Tool error rate, loop count above cap</td></tr>
+        <tr><th>Audit</th><td>CloudTrail for Bedrock control-plane and agent API calls; invocation logs for payloads</td><td>Guardrail or logging config changes, unusual principals</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="cols">
+      <div>
+        <div class="code"><div class="cap"><span>invocation_logging.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">boto3.client("bedrock").put_model_invocation_logging_configuration(
+  loggingConfig={
+    "cloudWatchConfig": {
+      "logGroupName": "/aws/bedrock/invocations",
+      "roleArn": "arn:aws:iam::111122223333:role/bedrock-logging",
+      "largeDataDeliveryS3Config": {"bucketName": "acme-bedrock-audit", "keyPrefix": "large/"}},
+    "s3Config": {"bucketName": "acme-bedrock-audit", "keyPrefix": "payloads/"},
+    "textDataDeliveryEnabled": True,
+    "imageDataDeliveryEnabled": False,
+    "embeddingDataDeliveryEnabled": False})</code></pre></div>
+      </div>
+      <div>
+        <div class="code"><div class="cap"><span>alarm.sh</span><button type="button" class="cp">copy</button></div><pre><code data-lang="bash">aws cloudwatch put-metric-alarm \
+  --alarm-name bedrock-throttles-sonnet \
+  --namespace AWS/Bedrock --metric-name InvocationThrottles \
+  --dimensions Name=ModelId,Value=us.anthropic.claude-sonnet-4-5-20250929-v1:0 \
+  --statistic Sum --period 60 --evaluation-periods 5 \
+  --threshold 1 --comparison-operator GreaterThanOrEqualToThreshold \
+  --treat-missing-data notBreaching \
+  --alarm-actions arn:aws:sns:us-east-1:111122223333:oncall</code></pre></div>
+      </div>
+    </div>
+
+    <h4>Secure prompt auditing bucket</h4>
+    <ul>
+      <li>SSE-KMS with a dedicated CMK, <code>BucketKeyEnabled</code>, Block Public Access, versioning, and Object Lock for regulated audit trails.</li>
+      <li>Bucket policy: deny non-TLS (<code>aws:SecureTransport=false</code>), allow writes only from <code>bedrock.amazonaws.com</code> with <code>aws:SourceAccount</code>, and restrict reads to a break-glass audit role.</li>
+      <li>Lifecycle to Glacier, retention matched to policy. Run Macie on the bucket. Payloads can contain PII, so keep Guardrails PII masking on the input path.</li>
+      <li>Add application-level trace IDs (<code>requestMetadata</code> in Converse) so logs join to your app traces.</li>
+    </ul>
+  </div>
+</details>
+
+<details class="blk" data-pillar="4">
+  <summary>
+    <div class="meta">FinOps · inference profiles · Provisioned Throughput</div>
+    <h3>FinOps &amp; cost optimization</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="tbl"><table>
+      <thead><tr><th>Lever</th><th>How</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><th>Cost allocation tags</th><td>Create <strong>application inference profiles</strong> per team/app/env with tags, invoke through their ARN. Activate tags in Billing. Tag agents, KBs, guardrails, Lambda, OpenSearch.</td><td>Tags on the base model do not flow to usage. The application inference profile is the attribution handle.</td></tr>
+        <tr><th>Provisioned Throughput</th><td>Buy model units (no commitment hourly, 1 month, or 6 months) for steady high volume, strict latency, or custom/imported model hosting</td><td>Required to serve custom fine-tuned models. Breakeven is high sustained utilization. Otherwise on-demand wins.</td></tr>
+        <tr><th>Cross-region inference</th><td>Use geographic (<code>us.</code>, <code>eu.</code>, <code>apac.</code>) or <code>global.</code> profiles</td><td>Higher burst throughput and fewer throttles. Confirm data-residency rules. Geographic and global profiles are priced differently.</td></tr>
+        <tr><th>Batch inference</th><td><code>create_model_invocation_job</code> with JSONL in S3, results to S3</td><td>Discounted versus on-demand for supported models (about 50%). For evals, embeddings backfills, classification, summarization.</td></tr>
+        <tr><th>Prompt caching</th><td><code>cachePoint</code> after static prefix (system, tools, long docs)</td><td>Cache reads are billed far below normal input tokens. Short TTL, so it suits chatty sessions.</td></tr>
+        <tr><th>Model routing</th><td>Small model for routing, extraction, classification. Large model for hard reasoning. Intelligent Prompt Routing for supported families.</td><td>Cheapest tokens are the ones you do not send: trim history, summarize, cap <code>maxTokens</code>.</td></tr>
+        <tr><th>SageMaker Savings Plans</th><td>1 or 3 year hourly commitment (up to about 64% off) across instance family, size and region for Studio, training, processing, real-time and batch inference</td><td>Covers SageMaker instance spend only, not Bedrock tokens.</td></tr>
+        <tr><th>Semantic cache</th><td>Valkey/MemoryDB vector lookup before the LLM call</td><td>Big wins on FAQ-style traffic. Guard with tenant keys and TTL.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="code"><div class="cap"><span>cost_tags_and_batch.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">bd = boto3.client("bedrock")
+prof = bd.create_inference_profile(
+    inferenceProfileName="support-agent-prod",
+    modelSource={"copyFrom": "arn:aws:bedrock:us-east-1:111122223333:inference-profile/" + MODEL},
+    tags=[{"key": "team", "value": "cx"}, {"key": "app", "value": "support-agent"},
+          {"key": "env", "value": "prod"}, {"key": "cost-center", "value": "4410"}])
+# invoke with modelId=prof["inferenceProfileArn"]
+
+bd.create_model_invocation_job(
+    jobName="eval-backfill-2026-10-05", roleArn=BATCH_ROLE_ARN, modelId=MODEL,
+    inputDataConfig={"s3InputDataConfig": {"s3Uri": "s3://acme-batch/in/records.jsonl"}},
+    outputDataConfig={"s3OutputDataConfig": {"s3Uri": "s3://acme-batch/out/"}})
+# each JSONL line: {"recordId": "r1", "modelInput": {...model-native request...}}</code></pre></div>
+  </div>
+</details>
+
+<details class="blk" data-pillar="4">
+  <summary>
+    <div class="meta">IAM · least privilege</div>
+    <h3>Security: least-privilege policy for one model and one bucket</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="code"><div class="cap"><span>agent-task-role-policy.json</span><button type="button" class="cp">copy</button></div><pre><code data-lang="json">{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InvokeOneModelViaProfile",
+      "Effect": "Allow",
+      "Action": ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"],
+      "Resource": [
+        "arn:aws:bedrock:us-east-1:111122223333:inference-profile/us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+        "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0",
+        "arn:aws:bedrock:us-east-2::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0",
+        "arn:aws:bedrock:us-west-2::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0"
+      ]
+    },
+    {
+      "Sid": "ApplyOneGuardrail",
+      "Effect": "Allow",
+      "Action": "bedrock:ApplyGuardrail",
+      "Resource": "arn:aws:bedrock:us-east-1:111122223333:guardrail/gr-abc123"
+    },
+    {
+      "Sid": "ReadCorpusPrefix",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::acme-rag-corpus/public-docs/*"
+    },
+    {
+      "Sid": "ListCorpusPrefix",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::acme-rag-corpus",
+      "Condition": {"StringLike": {"s3:prefix": ["public-docs/*"]}}
+    },
+    {
+      "Sid": "DecryptCorpusKey",
+      "Effect": "Allow",
+      "Action": ["kms:Decrypt", "kms:GenerateDataKey"],
+      "Resource": "arn:aws:kms:us-east-1:111122223333:key/abcd-1234",
+      "Condition": {"StringEquals": {"kms:ViaService": "s3.us-east-1.amazonaws.com"}}
+    }
+  ]
+}</code></pre></div>
+    <div class="call" style="--c:var(--orange)"><b class="k">notes</b><ul><li>Converse and ConverseStream are authorized by <code>bedrock:InvokeModel</code> and <code>InvokeModelWithResponseStream</code>.</li><li>Cross-region profiles need permission on the profile ARN <em>and</em> the foundation-model ARN in every destination region, or you get AccessDenied only on rerouted calls.</li><li>Prevent drift with an SCP that denies <code>bedrock:*</code> for unapproved model ARNs, plus a permissions boundary on agent roles.</li><li>For Knowledge Base queries grant <code>bedrock:Retrieve</code> / <code>RetrieveAndGenerate</code> on the KB ARN. For agents, <code>bedrock:InvokeAgent</code> on the alias ARN.</li></ul></div>
+  </div>
+</details>
+
+<!-- ======================= PILLAR 5 ======================= -->
+<header class="pillar-head" id="p5" style="--c:var(--p5)">
+  <span class="num">05 / secure_deployment.py</span>
+  <h2>Secure deployment &amp; CI/CD</h2>
+  <p>Infrastructure as code, release pipelines with eval gates, network and encryption controls, and runtime choice.</p>
+</header>
+
+<details class="blk" open data-pillar="5">
+  <summary>
+    <div class="meta">AWS CDK (Python) · aws_bedrock L1 constructs</div>
+    <h3>IaC: CDK for a Bedrock Agent with action group and Knowledge Base</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="code"><div class="cap"><span>agent_stack.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">from aws_cdk import Stack, Duration, aws_bedrock as bedrock, aws_lambda as _lambda, aws_iam as iam
+from constructs import Construct
+
+FM = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+
+class AgentStack(Stack):
+    def __init__(self, scope: Construct, id: str, **kw):
+        super().__init__(scope, id, **kw)
+
+        tools_fn = _lambda.Function(self, "ToolsFn",
+            runtime=_lambda.Runtime.PYTHON_3_12, handler="app.handler",
+            code=_lambda.Code.from_asset("lambda/tools"), timeout=Duration.seconds(25))
+
+        # Agent role: trust Bedrock, allow only this model/profile
+        role = iam.Role(self, "AgentRole",
+            assumed_by=iam.ServicePrincipal("bedrock.amazonaws.com",
+                conditions={"StringEquals": {"aws:SourceAccount": self.account},
+                            "ArnLike": {"aws:SourceArn": f"arn:aws:bedrock:{self.region}:{self.account}:agent/*"}}))
+        role.add_to_policy(iam.PolicyStatement(
+            actions=["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream", "bedrock:GetInferenceProfile"],
+            resources=[f"arn:aws:bedrock:*:{self.account}:inference-profile/{FM}",
+                       "arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0"]))
+
+        agent = bedrock.CfnAgent(self, "Agent",
+            agent_name="support-agent",
+            foundation_model=FM,
+            instruction="You are a support agent. Use tools to look up orders. Never guess order data.",
+            agent_resource_role_arn=role.role_arn,
+            idle_session_ttl_in_seconds=900,
+            auto_prepare=True,
+            guardrail_configuration=bedrock.CfnAgent.GuardrailConfigurationProperty(
+                guardrail_identifier="gr-abc123", guardrail_version="3"),
+            action_groups=[bedrock.CfnAgent.AgentActionGroupProperty(
+                action_group_name="orders", action_group_state="ENABLED",
+                action_group_executor=bedrock.CfnAgent.ActionGroupExecutorProperty(
+                    lambda_=tools_fn.function_arn),
+                api_schema=bedrock.CfnAgent.APISchemaProperty(
+                    payload=open("schemas/openapi.yaml").read()))],
+            knowledge_bases=[bedrock.CfnAgent.AgentKnowledgeBaseProperty(
+                knowledge_base_id="KB12345678", description="Refund and shipping policy docs",
+                knowledge_base_state="ENABLED")])
+
+        # Wildcard-scoped ARN avoids a circular dependency on agent.attr_agent_arn
+        tools_fn.add_permission("BedrockInvoke",
+            principal=iam.ServicePrincipal("bedrock.amazonaws.com"),
+            action="lambda:InvokeFunction",
+            source_arn=f"arn:aws:bedrock:{self.region}:{self.account}:agent/*")
+
+        bedrock.CfnAgentAlias(self, "ProdAlias",
+            agent_id=agent.attr_agent_id, agent_alias_name="prod")</code></pre></div>
+
+    <h4>Knowledge Base (OpenSearch Serverless) and data source</h4>
+    <div class="code"><div class="cap"><span>kb_construct.py</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">kb = bedrock.CfnKnowledgeBase(self, "KB", name="policy-kb", role_arn=kb_role.role_arn,
+    knowledge_base_configuration=bedrock.CfnKnowledgeBase.KnowledgeBaseConfigurationProperty(
+        type="VECTOR",
+        vector_knowledge_base_configuration=bedrock.CfnKnowledgeBase.VectorKnowledgeBaseConfigurationProperty(
+            embedding_model_arn=f"arn:aws:bedrock:{self.region}::foundation-model/amazon.titan-embed-text-v2:0")),
+    storage_configuration=bedrock.CfnKnowledgeBase.StorageConfigurationProperty(
+        type="OPENSEARCH_SERVERLESS",
+        opensearch_serverless_configuration=bedrock.CfnKnowledgeBase.OpenSearchServerlessConfigurationProperty(
+            collection_arn=collection_arn, vector_index_name="policy-idx",
+            field_mapping=bedrock.CfnKnowledgeBase.OpenSearchServerlessFieldMappingProperty(
+                vector_field="vec", text_field="text", metadata_field="meta"))))
+
+bedrock.CfnDataSource(self, "DS", knowledge_base_id=kb.attr_knowledge_base_id, name="s3-policies",
+    data_source_configuration=bedrock.CfnDataSource.DataSourceConfigurationProperty(
+        type="S3", s3_configuration=bedrock.CfnDataSource.S3DataSourceConfigurationProperty(
+            bucket_arn=bucket.bucket_arn, inclusion_prefixes=["policies/"])),
+    vector_ingestion_configuration=bedrock.CfnDataSource.VectorIngestionConfigurationProperty(
+        chunking_configuration=bedrock.CfnDataSource.ChunkingConfigurationProperty(
+            chunking_strategy="FIXED_SIZE",
+            fixed_size_chunking_configuration=bedrock.CfnDataSource.FixedSizeChunkingConfigurationProperty(
+                max_tokens=400, overlap_percentage=15))))</code></pre></div>
+    <div class="call" style="--c:var(--orange)"><b class="k">gotcha</b><p>The OpenSearch Serverless index must exist, with matching vector dimension (1024 for Titan v2 default), before the KB is created. Create it in a custom resource or a prior step, and add data-access policies for the KB role.</p></div>
+  </div>
+</details>
+
+<details class="blk" data-pillar="5">
+  <summary>
+    <div class="meta">Terraform · hashicorp/aws</div>
+    <h3>IaC: Terraform for a Bedrock Agent with Lambda action group</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="code"><div class="cap"><span>agent.tf</span><button type="button" class="cp">copy</button></div><pre><code data-lang="hcl">variable "foundation_model" {
+  type    = string
+  default = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+}
+
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
+locals {
+  account_id = data.aws_caller_identity.current.account_id
+  region     = data.aws_region.current.name
+}
+
+resource "aws_iam_role" "agent" {
+  name = "bedrock-agent-support"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "bedrock.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+      Condition = {
+        StringEquals = { "aws:SourceAccount" = local.account_id }
+        ArnLike      = { "aws:SourceArn" = "arn:aws:bedrock:${local.region}:${local.account_id}:agent/*" }
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "agent_model" {
+  role = aws_iam_role.agent.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream", "bedrock:GetInferenceProfile"]
+      Resource = [
+        "arn:aws:bedrock:*:${local.account_id}:inference-profile/${var.foundation_model}",
+        "arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0"
+      ]
+    }]
+  })
+}
+
+resource "aws_lambda_function" "tools" {
+  function_name    = "agent-tools"
+  role             = aws_iam_role.tools_exec.arn
+  runtime          = "python3.12"
+  handler          = "app.handler"
+  filename         = data.archive_file.tools.output_path
+  source_code_hash = data.archive_file.tools.output_base64sha256
+  timeout          = 25
+  kms_key_arn      = aws_kms_key.agent.arn
+  tracing_config { mode = "Active" }
+}
+
+resource "aws_bedrockagent_agent" "support" {
+  agent_name                  = "support-agent"
+  agent_resource_role_arn     = aws_iam_role.agent.arn
+  foundation_model            = var.foundation_model
+  idle_session_ttl_in_seconds = 900
+  prepare_agent               = true
+  instruction                 = "You are a support agent. Use tools to look up orders. Never guess order data."
+
+  guardrail_configuration {
+    guardrail_identifier = aws_bedrock_guardrail.main.guardrail_id
+    guardrail_version    = aws_bedrock_guardrail_version.main.version
+  }
+}
+
+resource "aws_bedrockagent_agent_action_group" "orders" {
+  agent_id                   = aws_bedrockagent_agent.support.agent_id
+  agent_version              = "DRAFT"
+  action_group_name          = "orders"
+  action_group_state         = "ENABLED"
+  skip_resource_in_use_check = true
+
+  action_group_executor {
+    lambda = aws_lambda_function.tools.arn
+  }
+  api_schema {
+    payload = file("${path.module}/schemas/openapi.yaml")
+  }
+}
+
+resource "aws_lambda_permission" "bedrock_invoke" {
+  statement_id  = "AllowBedrockAgentInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.tools.function_name
+  principal     = "bedrock.amazonaws.com"
+  source_arn    = aws_bedrockagent_agent.support.agent_arn
+}
+
+resource "aws_bedrockagent_agent_alias" "prod" {
+  agent_id         = aws_bedrockagent_agent.support.agent_id
+  agent_alias_name = "prod"
+  depends_on       = [aws_bedrockagent_agent_action_group.orders]
+}</code></pre></div>
+    <div class="call" style="--c:var(--cyan)"><b class="k">notes</b><ul><li>Terraform's action group attaches to <code>DRAFT</code>. Re-prepare the agent and create a new alias version when schemas change, otherwise the alias keeps serving the old version.</li><li>Remote state in S3 with KMS and DynamoDB or S3 native locking. Run <code>terraform plan</code> on PRs and apply only from the pipeline role.</li><li>Check your provider version for argument changes on the Bedrock agent resources.</li></ul></div>
+  </div>
+</details>
+
+<details class="blk" open data-pillar="5">
+  <summary>
+    <div class="meta">CodePipeline · GitHub Actions · Bedrock Prompt Management</div>
+    <h3>CI/CD: prompts, models and agents with eval gates</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <figure class="diagram" style="margin:0 0 14px">
+      <figcaption>release pipeline with blocking eval gate and alias-based rollback</figcaption>
+      <div class="scroll">
+      <svg class="dg" viewBox="0 0 960 250" role="img" aria-label="CI/CD pipeline with evaluation gate">
+        <defs><marker id="ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c1b8c8"/></marker></defs>
+        <rect class="n ye" x="20"  y="40" width="104" height="62" rx="8"/><text x="72" y="66" text-anchor="middle">Commit</text><text class="sub" x="72" y="82" text-anchor="middle">prompt · schema · IaC</text>
+        <rect class="n cy" x="146" y="40" width="104" height="62" rx="8"/><text x="198" y="66" text-anchor="middle">Static checks</text><text class="sub" x="198" y="82" text-anchor="middle">lint · cdk-nag · tfsec</text>
+        <rect class="n cy" x="272" y="40" width="104" height="62" rx="8"/><text x="324" y="66" text-anchor="middle">Unit tests</text><text class="sub" x="324" y="82" text-anchor="middle">tools · parsers</text>
+        <rect class="n pk" x="398" y="40" width="124" height="62" rx="8"/><text x="460" y="66" text-anchor="middle">Offline eval gate</text><text class="sub" x="460" y="82" text-anchor="middle">golden set · judge · block</text>
+        <rect class="n pu" x="544" y="40" width="104" height="62" rx="8"/><text x="596" y="66" text-anchor="middle">Deploy stage</text><text class="sub" x="596" y="82" text-anchor="middle">cdk / terraform</text>
+        <rect class="n gr" x="670" y="40" width="104" height="62" rx="8"/><text x="722" y="66" text-anchor="middle">Smoke + red team</text><text class="sub" x="722" y="82" text-anchor="middle">guardrail probes</text>
+        <rect class="n or" x="796" y="40" width="144" height="62" rx="8"/><text x="868" y="66" text-anchor="middle">Approve + shift</text><text class="sub" x="868" y="82" text-anchor="middle">alias canary 10 / 50 / 100</text>
+        <path class="ln" marker-end="url(#ar4)" d="M124 71H146"/><path class="ln" marker-end="url(#ar4)" d="M250 71H272"/><path class="ln" marker-end="url(#ar4)" d="M376 71H398"/>
+        <path class="ln" marker-end="url(#ar4)" d="M522 71H544"/><path class="ln" marker-end="url(#ar4)" d="M648 71H670"/><path class="ln" marker-end="url(#ar4)" d="M774 71H796"/>
+        <rect class="n gr" x="796" y="156" width="144" height="56" rx="8"/><text x="868" y="180" text-anchor="middle">Monitor</text><text class="sub" x="868" y="196" text-anchor="middle">CloudWatch · online evals</text>
+        <path class="ln" marker-end="url(#ar4)" d="M868 102V156"/>
+        <path class="ln dash" marker-end="url(#ar4)" d="M796 184H72V102"/><text class="lbl" x="300" y="176">regression: repoint alias to previous version, add case to golden set</text>
+        <path class="ln dash" marker-end="url(#ar4)" d="M460 102V132"/><text class="lbl" x="470" y="128">fail: block merge</text>
+      </svg>
+      </div>
+    </figure>
+
+    <div class="cols">
+      <div>
+        <div class="code"><div class="cap"><span>.github/workflows/deploy.yml</span><button type="button" class="cp">copy</button></div><pre><code data-lang="yaml">name: agent-release
+on:
+  pull_request: {branches: [main]}
+  push: {branches: [main]}
+permissions:
+  id-token: write       # OIDC to AWS, no static keys
+  contents: read
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::111122223333:role/gha-eval
+          aws-region: us-east-1
+      - run: pip install -r requirements.txt
+      - run: pytest tests/unit -q
+      - run: python evals/run.py --set golden.jsonl --min-groundedness 4.2 --min-pass 0.92
+  deploy:
+    needs: eval
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production        # required reviewers
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::111122223333:role/gha-deploy
+          aws-region: us-east-1
+      - run: npx cdk deploy AgentStack --require-approval never</code></pre></div>
+      </div>
+      <div>
+        <div class="code"><div class="cap"><span>promote.py (versioned prompt + alias)</span><button type="button" class="cp">copy</button></div><pre><code data-lang="python">ba = boto3.client("bedrock-agent")
+
+# Immutable prompt version from Bedrock Prompt Management
+v = ba.create_prompt_version(promptIdentifier="PROMPT123",
+        description=f"git {GIT_SHA}")["version"]
+
+# New immutable agent version, then shift the alias
+ba.prepare_agent(agentId=AGENT_ID)
+ba.update_agent_alias(agentId=AGENT_ID, agentAliasId=ALIAS_ID, agentAliasName="prod",
+    routingConfiguration=[{"agentVersion": NEW_AGENT_VERSION}])
+
+# Rollback = same call with the previous agentVersion
+# Smoke: invoke alias with canary prompts, assert guardrail blocks + tool paths</code></pre></div>
+      </div>
+    </div>
+
+    <div class="tbl"><table>
+      <thead><tr><th>CodePipeline stage</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><th>Source</th><td>CodeStarSourceConnection (GitHub/GitLab) or CodeCommit; trigger on prompt, schema, eval and IaC paths</td></tr>
+        <tr><th>Build</th><td>CodeBuild: lint, unit tests, <code>cdk synth</code>, container build and ECR scan</td></tr>
+        <tr><th>Eval gate</th><td>CodeBuild job running the golden set against a pinned model/prompt. Fails the pipeline below thresholds. Store reports in S3.</td></tr>
+        <tr><th>Deploy-Staging</th><td>CloudFormation/CDK or Terraform action, then integration and guardrail red-team tests</td></tr>
+        <tr><th>Approval</th><td>Manual approval with eval report link and cost diff</td></tr>
+        <tr><th>Deploy-Prod</th><td>Apply, create agent version, shift alias gradually, watch alarms, auto-rollback on alarm</td></tr>
+      </tbody>
+    </table></div>
+    <div class="call" style="--c:var(--pink)"><b class="k">what to version</b><p>Prompt text, tool schemas, guardrail version, model ID/profile, KB data-source snapshot and chunking config, and the golden set. Every eval result should record all of them so a regression has an owner.</p></div>
+  </div>
+</details>
+
+<details class="blk" data-pillar="5">
+  <summary>
+    <div class="meta">PrivateLink · KMS · IAM</div>
+    <h3>Enterprise security: VPC endpoints, KMS and IAM</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="tbl"><table>
+      <thead><tr><th>Control</th><th>Implementation</th></tr></thead>
+      <tbody>
+        <tr><th>Private traffic</th><td>Interface endpoints: <code>bedrock-runtime</code>, <code>bedrock-agent-runtime</code>, <code>bedrock</code>, <code>bedrock-agent</code>, plus AgentCore data-plane endpoints where available. Gateway endpoints for S3 and DynamoDB. Interface endpoints for <code>logs</code>, <code>kms</code>, <code>secretsmanager</code>, <code>ecr.api</code>, <code>ecr.dkr</code>. Enable private DNS.</td></tr>
+        <tr><th>Endpoint policy</th><td>Restrict to your account's principals and approved model ARNs.</td></tr>
+        <tr><th>Encryption at rest</th><td>Customer-managed KMS keys on: S3 corpus and log buckets, OpenSearch Serverless collection (encryption policy), Aurora, DynamoDB, KB (<code>kmsKeyArn</code>), agent (<code>customerEncryptionKeyArn</code>), guardrail (<code>kmsKeyId</code>), CloudWatch log groups, Lambda env vars. Rotate annually.</td></tr>
+        <tr><th>Encryption in transit</th><td>TLS 1.2+ everywhere; deny <code>aws:SecureTransport=false</code> on buckets.</td></tr>
+        <tr><th>Identity</th><td>Task and Lambda roles per agent, no shared roles. IRSA or Pod Identity on EKS. Session tags for tenant-scoped access. Permissions boundaries and SCPs for model allow-lists.</td></tr>
+        <tr><th>Data handling</th><td>Bedrock does not use your prompts or outputs to train base models, and does not share them with model providers. Mask PII with Guardrails before logging.</td></tr>
+        <tr><th>Secrets</th><td>Secrets Manager for third-party keys with rotation. Never in prompts, env files, or tool outputs.</td></tr>
+        <tr><th>Agent-specific</th><td>Treat tool outputs and retrieved text as untrusted (prompt injection). Allow-list tool targets, require approval (return of control) for destructive actions, authorize with the end user's identity.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="cols">
+      <div>
+        <div class="code"><div class="cap"><span>vpc_endpoint.sh</span><button type="button" class="cp">copy</button></div><pre><code data-lang="bash">aws ec2 create-vpc-endpoint \
+  --vpc-id vpc-0abc --vpc-endpoint-type Interface \
+  --service-name com.amazonaws.us-east-1.bedrock-runtime \
+  --subnet-ids subnet-0a subnet-0b --security-group-ids sg-0agent \
+  --private-dns-enabled \
+  --policy-document file://bedrock-endpoint-policy.json</code></pre></div>
+      </div>
+      <div>
+        <div class="code"><div class="cap"><span>bedrock-endpoint-policy.json</span><button type="button" class="cp">copy</button></div><pre><code data-lang="json">{
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": "*",
+    "Action": ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"],
+    "Resource": "*",
+    "Condition": {"StringEquals": {"aws:PrincipalOrgID": "o-exampleorg"}}
+  }]
+}</code></pre></div>
+      </div>
+    </div>
+    <div class="code"><div class="cap"><span>kms-key-policy-snippet.json</span><button type="button" class="cp">copy</button></div><pre><code data-lang="json">{
+  "Sid": "AllowBedrockLogDelivery",
+  "Effect": "Allow",
+  "Principal": {"Service": "bedrock.amazonaws.com"},
+  "Action": ["kms:GenerateDataKey", "kms:Decrypt"],
+  "Resource": "*",
+  "Condition": {"StringEquals": {"aws:SourceAccount": "111122223333"}}
+}</code></pre></div>
+  </div>
+</details>
+
+<details class="blk" open data-pillar="5">
+  <summary>
+    <div class="meta">hosting_matrix.md</div>
+    <h3>Compute hosting: agent runtime cheat list</h3>
+    <span class="toggle"><span class="o">Open</span><span class="c">Close</span></span>
+  </summary>
+  <div class="blk-body">
+    <div class="tbl"><table>
+      <thead><tr><th>Runtime</th><th>Pick when</th><th>Avoid when</th><th>Watch</th></tr></thead>
+      <tbody>
+        <tr><th>Lambda</th><td>Event-driven, bursty, under 15 min, stateless; webhook or queue triggered; scale to zero matters</td><td>Long streams, large dependency trees, persistent connections or in-process state</td><td>API Gateway REST integration timeout (about 29 s by default). Use Function URL streaming, ALB, or async via SQS. Provisioned concurrency for cold starts.</td></tr>
+        <tr><th>ECS on Fargate</th><td>Long-running stateful-ish agents, SSE/WebSocket, steady traffic, no cluster ops</td><td>GPUs, daemon sets, deep K8s ecosystem needs</td><td>Scale on request count per target. Task CPU/memory sizing for concurrency. Externalize state.</td></tr>
+        <tr><th>EKS</th><td>Platform of many agents and services, GPUs or self-hosted models, mesh, advanced scheduling</td><td>Small team without Kubernetes expertise</td><td>Node cost, upgrades, KEDA for queue-based scaling, Pod Identity.</td></tr>
+        <tr><th>AgentCore Runtime</th><td>You want serverless agents with session isolation, long sessions, and built-in identity, memory and observability</td><td>You need custom networking or sidecars beyond what it offers</td><td>Preview/GA status and region coverage. Container or code packaging contract (<code>/invocations</code>, <code>/ping</code>).</td></tr>
+        <tr><th>Bedrock Agents (managed)</th><td>Fast path, standard tool and KB orchestration, minimal code</td><td>Custom control flow, multi-agent graphs, non-Bedrock models</td><td>Orchestration prompts, session TTL, per-step Lambda timeouts.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</details>
+
+<!-- ======================= PITFALLS ======================= -->
+<header class="pillar-head" id="pit" style="--c:var(--orange)">
+  <span class="num">99 / gotchas.log</span>
+  <h2>Production gotchas</h2>
+  <p>The failures that show up after the demo works.</p>
+</header>
+<ul class="pit" data-pillar="0" id="pitList">
+  <li><b>ThrottlingException</b>Quotas are per model, per region, in tokens-per-minute and requests-per-minute. Use adaptive retries, jittered backoff, a client-side semaphore, and cross-region profiles.</li>
+  <li><b>max_tokens burndown</b>Some models reserve quota against <code>maxTokens</code> up front. Oversized caps throttle you earlier than real usage would.</li>
+  <li><b>Read timeouts</b>Long generations exceed the default boto3 read timeout. Raise <code>read_timeout</code> and stream.</li>
+  <li><b>Model ID drift</b>Models are retired. Keep IDs in config, track deprecation notices, and rerun evals on every swap.</li>
+  <li><b>Embedding mismatch</b>Query and index must use the same model and dimensions. Changing either means a full re-index.</li>
+  <li><b>Stale KB</b>Ingestion is not automatic on S3 change. Trigger sync jobs and alarm on job failure and document counts.</li>
+  <li><b>Unbounded agent loops</b>Cap iterations, tool calls, tokens and wall time per request. Alarm on outliers.</li>
+  <li><b>Shared-role sprawl</b>One role for all agents makes blast radius and audit useless. One role per agent, scoped to its resources.</li>
+  <li><b>Logging secrets</b>Payload logging captures PII and credentials users paste in. Mask first, encrypt, restrict reads.</li>
+  <li><b>Region coverage</b>Features (Guardrails options, AgentCore pieces, models) differ by region. Check availability before designing around one.</li>
+</ul>
+
+<div class="empty" id="empty">No blocks match that search. Try a service name or a keyword like "KMS" or "checkpoint".</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Michael Legemah · Principal AI Engineer</span>
+    <span><a href="https://mleg.tech" target="_blank" rel="noopener">mleg.tech</a> &nbsp; <a href="https://github.com/MikeLegemah5799" target="_blank" rel="noopener">GitHub</a> &nbsp; <a href="https://linkedin.com/in/michaellegemah" target="_blank" rel="noopener">LinkedIn</a></span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  /* ---- lightweight syntax highlighter ---- */
+  var KW = /^(import|from|def|return|for|in|if|else|elif|None|True|False|class|with|as|try|except|lambda|while|break|assert|and|or|not|pass|resource|variable|data|locals|output|SELECT|FROM|WHERE|ORDER|BY|LIMIT|CREATE|TABLE|INDEX|ON|USING|SET|EXTENSION|IF|NOT|EXISTS|PRIMARY|KEY|WITH|self)$/;
+  var RX = /(#[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|\b([A-Za-z_][A-Za-z0-9_]*)\b(\()?|\b(\d+(?:\.\d+)?)\b/g;
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function hl(src, lang) {
+    if (lang === 'json') {
+      return esc(src).replace(/(&quot;|")((?:[^"\\\n]|\\.)*)(")(\s*:)?/g, function (m, a, b, c, d) {
+        return '<span class="' + (d ? 'tk-f' : 'tk-s') + '">"' + b + '"</span>' + (d || '');
+      });
+    }
+    var out = '', last = 0, m;
+    RX.lastIndex = 0;
+    while ((m = RX.exec(src))) {
+      out += esc(src.slice(last, m.index));
+      if (m[1] && lang !== 'sql') out += '<span class="tk-c">' + esc(m[1]) + '</span>';
+      else if (m[1]) out += esc(m[1]);
+      else if (m[2]) out += '<span class="tk-s">' + esc(m[2]) + '</span>';
+      else if (m[3]) {
+        if (KW.test(m[3])) out += '<span class="tk-k">' + m[3] + '</span>' + (m[4] || '');
+        else if (m[4]) out += '<span class="tk-f">' + m[3] + '</span>(';
+        else out += esc(m[3]);
+      } else if (m[5]) out += '<span class="tk-n">' + m[5] + '</span>';
+      else out += esc(m[0]);
+      last = RX.lastIndex;
+    }
+    return out + esc(src.slice(last));
+  }
+  document.querySelectorAll('.code pre code').forEach(function (el) {
+    try { el.innerHTML = hl(el.textContent, el.getAttribute('data-lang') || ''); } catch (e) {}
+  });
+
+  /* ---- copy buttons ---- */
+  document.querySelectorAll('.code .cp').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.closest('.code').querySelector('pre').textContent;
+      var done = function () { b.textContent = 'copied'; setTimeout(function () { b.textContent = 'copy'; }, 1400); };
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(done, fallback); }
+        else fallback();
+      } catch (e) { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  /* ---- search + expand all ---- */
+  var blocks = Array.prototype.slice.call(document.querySelectorAll('details.blk'));
+  var pit = document.getElementById('pitList');
+  var q = document.getElementById('q'), empty = document.getElementById('empty'), btn = document.getElementById('expandBtn');
+  var saved = null, allOpen = false;
+  function run() {
+    var term = q.value.trim().toLowerCase();
+    if (!term) {
+      blocks.forEach(function (b) { b.style.display = ''; });
+      if (saved) { blocks.forEach(function (b, i) { b.open = saved[i]; }); saved = null; }
+      empty.style.display = 'none';
+      return;
+    }
+    if (!saved) saved = blocks.map(function (b) { return b.open; });
+    var hits = 0;
+    blocks.forEach(function (b) {
+      var hit = b.textContent.toLowerCase().indexOf(term) !== -1;
+      b.style.display = hit ? '' : 'none';
+      if (hit) { b.open = true; hits++; }
+    });
+    empty.style.display = hits ? 'none' : 'block';
+  }
+  q.addEventListener('input', run);
+  btn.addEventListener('click', function () {
+    allOpen = !allOpen;
+    blocks.forEach(function (b) { b.open = allOpen; });
+    saved = null;
+    btn.textContent = allOpen ? 'Collapse all' : 'Expand all';
+  });
+  window.addEventListener('beforeprint', function () { blocks.forEach(function (b) { b.open = true; }); });
+})();
+</script>
+</body>
+</html>
